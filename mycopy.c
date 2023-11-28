@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
-        printf("整不明白咋使吗？./mycopy 复制文件 粘贴文件", argv[0]);
+        printf("整不明白咋使吗？./mycopy 复制文件 粘贴文件");
         exit(EXIT_FAILURE);
     }
 
