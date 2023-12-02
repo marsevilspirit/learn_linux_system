@@ -9,6 +9,8 @@
 #include <pwd.h>
 #include <grp.h>
  
+//show list
 void list(DIR * dir, struct dirent * entry);
 
- 
+//ls -l info
+void list_l_info(); 

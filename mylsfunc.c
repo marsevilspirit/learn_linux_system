@@ -1,6 +1,6 @@
 #include "myls.h"
 
-extern int flag_a; 
+extern int flag_a, flag_l; 
 
 void list(DIR * dir, struct dirent * entry)
 {

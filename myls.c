@@ -2,7 +2,7 @@
 
 extern int optind, opterr, optopt;
 extern char * optarg;
-int flag_a = 0;
+int flag_a = 0, flag_l = 0;
 
 int main(int argc, char *argv[])
 {
@@ -33,10 +33,10 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'a':      
-                flag_a++;
+                flag_a = 1;
                 break;
             case 'l':
-                printf("we use l\n");
+                flag_l = 1;
                 break;
             case 'R':
                 printf("we use R\n");
