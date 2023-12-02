@@ -5,9 +5,10 @@ extern char * optarg;
 int flag_a = 0, flag_l = 0;
 
 int main(int argc, char *argv[])
-{
+{ 
     int opt, i = 1; 
-    DIR * dir;
+    char * need_argv[5];//储存文件名和目录名
+    DIR * dir; 
     struct dirent * entry;
 
     if(argc == 1)
