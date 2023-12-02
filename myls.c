@@ -1,10 +1,8 @@
 #include "myls.h"
-#include <dirent.h>
-#include <stdio.h>
 
 extern int optind, opterr, optopt;
 extern char * optarg;
-int flaga = 0;
+int flag_a = 0;
 
 int main(int argc, char *argv[])
 {
@@ -35,7 +33,7 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'a':      
-                flaga++;
+                flag_a++;
                 break;
             case 'l':
                 printf("we use l\n");
