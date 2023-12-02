@@ -1,13 +1,37 @@
 #include "myls.h"
+#include <dirent.h>
 #include <stdio.h>
+
+extern int optind, opterr, optopt;
+extern char * optarg;
+int flaga = 0;
 
 int main(int argc, char *argv[])
 {
-    int opt; 
+    int opt, i = 0, j = 0; 
     DIR * dir;
     struct dirent * entry;
+    char *arg[10];
 
+    while(argv[i] == NULL)
+    {
+        if(argv[i][0] != '-')
+        {
+            arg[j] = argv[i];
+            j++; 
+        }
+        i++;
+    }
+
+    if(argc < 2)
+    {
+        dir = opendir(".");
+    }
+    else
+    {
     dir = opendir(argv[1]);
+    }
+
     if(dir == NULL)
     {
         perror("opendir");
@@ -19,7 +43,7 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'a':      
-                printf("we use a\n");
+                flaga++;
                 break;
             case 'l':
                 printf("we use l\n");
@@ -38,6 +62,9 @@ int main(int argc, char *argv[])
                 break;
             case 's':
                 printf("we use s\n");
+                break;
+            case '?':
+                printf("------------please don't do this-------------\n");
                 break;
         }     
     }    
