@@ -8,28 +8,20 @@ int flaga = 0;
 
 int main(int argc, char *argv[])
 {
-    int opt, i = 0, j = 0; 
+    int opt, i = 1; 
     DIR * dir;
     struct dirent * entry;
-    char *arg[10];
 
-    while(argv[i] == NULL)
-    {
-        if(argv[i][0] != '-')
-        {
-            arg[j] = argv[i];
-            j++; 
-        }
-        i++;
-    }
-
-    if(argc < 2)
-    {
+    if(argc == 1)
         dir = opendir(".");
-    }
     else
     {
-    dir = opendir(argv[1]);
+        while (argv[i] != NULL && argv[i][0] == '-')
+            i++;         
+        if(argv[i] == NULL)
+            dir = opendir(".");
+        else
+            dir = opendir(argv[i]);
     }
 
     if(dir == NULL)
@@ -69,7 +61,7 @@ int main(int argc, char *argv[])
         }     
     }    
 
-    show_ls(dir, entry);
+    list(dir, entry);
 
     closedir(dir);
 

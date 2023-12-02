@@ -4,7 +4,7 @@
 
 extern int flaga; 
 
-void show_ls(DIR * dir, struct dirent * entry)
+void list(DIR * dir, struct dirent * entry)
 {
     while ((entry = readdir(dir)) != NULL)
     {
