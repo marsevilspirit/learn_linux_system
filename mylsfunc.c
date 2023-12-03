@@ -1,4 +1,5 @@
 #include "myls.h"
+#include <dirent.h>
 
 extern int flag_a;
 
@@ -34,4 +35,6 @@ void dir_list(char * use_arg)
             continue;
         printf("%s\n", entry->d_name);
     }
+
+    closedir(dir);
 }
