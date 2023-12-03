@@ -12,5 +12,7 @@
 //show list
 void judge_file(char * use_arg);
 
+void file_list(char * use_arg);
+
 void dir_list(char * use_arg); 
 

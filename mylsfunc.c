@@ -1,5 +1,6 @@
 #include "myls.h"
 #include <dirent.h>
+#include <stdio.h>
 
 extern int flag_a;
 
@@ -15,9 +16,14 @@ void judge_file(char * use_arg)//判断是文件还是目录
             dir_list(use_arg); 
             break;
         default:
-            printf("this is not a dir\n");
+            file_list(use_arg);
             break;
     }
+}
+
+void file_list(char * use_arg)
+{
+    printf("%s", use_arg);
 }
 
 void dir_list(char * use_arg)
@@ -26,7 +32,7 @@ void dir_list(char * use_arg)
     struct dirent * entry;
 
     dir = opendir(use_arg);
-    if(dir == NULL)
+    if(dir == NULL) 
         perror("opendir");
 
     while ((entry = readdir(dir)) != NULL)
@@ -38,3 +44,5 @@ void dir_list(char * use_arg)
 
     closedir(dir);
 }
+
+
