@@ -10,7 +10,7 @@
 #include <grp.h>
  
 //show list
-void list(DIR * dir, struct dirent * entry);
+void judge_file(char * use_arg);
 
-//ls -l info
-void list_l_info(); 
+void dir_list(char * use_arg); 
+

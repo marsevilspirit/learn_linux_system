@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include "myls.h"
+
 int main(int argc, char *argv[]) {
     int i = 1;
     int flag_use_arg = 0; // 标志是否有非命令行选项的命令行参数
@@ -39,14 +39,10 @@ int main(int argc, char *argv[]) {
         }
     }
     
-for (int k = 0; k < j; k++)
+for (int k = 0; k <= j; k++)
 {
-
-}
-
-
-
-
+    judge_file(use_arg[k]);
+} 
     // 释放动态分配的内存
     free(use_arg);
 

@@ -1,13 +1,20 @@
 #include "myls.h"
+#include <stdio.h>
+#include <sys/stat.h>
 
-extern int flag_a, flag_l; 
-
-void list(DIR * dir, struct dirent * entry)
+void judge_file(char * use_arg)//判断是文件还是目录
 {
-    while ((entry = readdir(dir)) != NULL)
+    struct stat arg; 
+    if(stat(use_arg, &arg) != 0)
+        perror("stat");
+    
+    switch (arg.st_mode & S_IFMT)
     {
-        if(entry->d_name[0] == '.' && flag_a ==0)
-            continue;
-        printf("%s\n", entry->d_name);
+        case S_IFDIR:
+            printf("this is a dir\n");
+            break;
+        default:
+            printf("this is not a dir\n");
+            break;
     }
 }
