@@ -53,7 +53,29 @@ void list_name_sort(struct dirent ** list_name, int len, const char *dir_path)
 
 void list_l(struct dirent *list_name)//-l
 {
+    struct stat list_l;
+    stat(list_name->d_name, &list_l); 
 
+    switch(list_l.st_mode & S_IFMT)
+    {
+        case S_IFREG:  printf("-");         break;
+        case S_IFDIR:  printf("d");         break;
+        case S_IFCHR:  printf("c");         break;
+        case S_IFBLK:  printf("b");         break;
+        case S_IFLNK:  printf("i");         break;
+        case S_IFIFO:  printf("p");         break;
+        case S_IFSOCK: printf("s");         break;
+    }
+        printf("%c",(list_l.st_mode & S_IRUSR) ? 'r' : '-');
+        printf("%c",(list_l.st_mode & S_IWUSR) ? 'w' : '-');
+        printf("%c",(list_l.st_mode & S_IXUSR) ? 'x' : '-');
+        printf("%c",(list_l.st_mode & S_IRGRP) ? 'r' : '-');
+        printf("%c",(list_l.st_mode & S_IWGRP) ? 'w' : '-');
+        printf("%c",(list_l.st_mode & S_IXGRP) ? 'x' : '-');
+        printf("%c",(list_l.st_mode & S_IROTH) ? 'r' : '-');
+        printf("%c",(list_l.st_mode & S_IWOTH) ? 'w' : '-');
+        printf("%c",(list_l.st_mode & S_IXOTH) ? 'x' : '-');
+        printf(" ");
 }
 
 void judge_file(char * use_arg)//判断是文件还是目录
