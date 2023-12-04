@@ -7,21 +7,43 @@
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
-void list_name_sort(struct dirent ** list_name, int len)
+void name_strcmp_sort(struct dirent **list_name, int len) 
 {
-    for(int i = 0; i < len; i++) 
+    for (int i = 0; i < len - 1; i++) 
     {
-
-        for(int j = i + 1; j < len; j++)
+        for (int j = i + 1; j < len; j++) 
         {
-            struct stat stat_i;
-            stat(list_name[i]->d_name, &stat_i);
-            struct stat stat_j;
-            stat(list_name[j]->d_name, &stat_j);
-
-            if(stat_i.st_mtime < stat_j.st_mtime)
+            if (strcasecmp((list_name[i]->d_name), list_name[j]->d_name) > 0) 
             {
-                struct dirent * tmp = list_name[j];
+                struct dirent *tmp = list_name[j];
+                list_name[j] = list_name[i];
+                list_name[i] = tmp;
+            }
+        }
+    }
+}
+
+void list_name_sort(struct dirent ** list_name, int len, const char *dir_path)
+{
+    for (int i = 0; i < len; i++)
+    {
+        for (int j = i + 1; j < len; j++) 
+        {
+            char path_i[PATH_MAX];
+            sprintf(path_i, "%s/%s", dir_path, list_name[i]->d_name);
+            struct stat stat_i;
+            lstat(path_i, &stat_i);
+            time_t mtime_i = stat_i.st_mtime;
+
+            char path_j[PATH_MAX];
+            sprintf(path_j, "%s/%s", dir_path, list_name[j]->d_name);
+            struct stat stat_j;
+            lstat(path_j, &stat_j);
+            time_t mtime_j = stat_j.st_mtime;
+
+            if (mtime_i < mtime_j)
+            {
+                struct dirent *tmp = list_name[j];
                 list_name[j] = list_name[i];
                 list_name[i] = tmp;
             }
@@ -77,8 +99,10 @@ void dir_list(char * use_arg)
     {
         list_name[i++] = entry; 
     }
+
+    name_strcmp_sort(list_name, i);
     if(flag_t == 1)
-        list_name_sort(list_name, i);
+        list_name_sort(list_name, i, use_arg);
 
     for(int j = 0; j < n; j++)
     {
