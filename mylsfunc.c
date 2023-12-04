@@ -1,5 +1,7 @@
 #include "myls.h"
 #include <dirent.h>
+#include <grp.h>
+#include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -75,6 +77,12 @@ void list_l(struct dirent *list_name)//-l
         printf("%c",(list_l.st_mode & S_IROTH) ? 'r' : '-');
         printf("%c",(list_l.st_mode & S_IWOTH) ? 'w' : '-');
         printf("%c",(list_l.st_mode & S_IXOTH) ? 'x' : '-');
+        printf(" %ld",list_l.st_nlink);
+
+        struct passwd * owner_info = getpwuid(list_l.st_uid);
+        printf(" %s", owner_info->pw_name);
+        struct group * group_info = getgrgid(list_l.st_gid);
+        printf(" %s", group_info->gr_name);
         printf(" ");
 }
 
