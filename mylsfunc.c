@@ -2,23 +2,31 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <time.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
-int compare_mtime(const void *a, const void *b) {
-    const struct dirent *entry1 = *(const struct dirent **)a;
-    const struct dirent *entry2 = *(const struct dirent **)b;
+void list_name_sort(struct dirent ** list_name, int len)
+{
+    for(int i = 0; i < len; i++) 
+    {
 
-    struct stat stat1, stat2;
-    stat(entry1->d_name, &stat1);
-    stat(entry2->d_name, &stat2);
+        for(int j = i + 1; j < len; j++)
+        {
+            struct stat stat_i;
+            stat(list_name[i]->d_name, &stat_i);
+            struct stat stat_j;
+            stat(list_name[j]->d_name, &stat_j);
 
-    if (stat1.st_mtime < stat2.st_mtime)
-        return 1;
-    else if (stat1.st_mtime > stat2.st_mtime)
-        return -1;
-    else
-        return 0;
+            if(stat_i.st_mtime < stat_j.st_mtime)
+            {
+                struct dirent * tmp = list_name[j];
+                list_name[j] = list_name[i];
+                list_name[i] = tmp;
+            }
+        }
+    }
 }
 
 void judge_file(char * use_arg)//判断是文件还是目录
@@ -53,7 +61,7 @@ void dir_list(char * use_arg)
     dir = opendir(use_arg);
     if(dir == NULL) 
         perror("opendir");
-    
+
     while ((entry = readdir(dir)) != NULL)
         n++;
     rewinddir(dir);  
@@ -69,19 +77,17 @@ void dir_list(char * use_arg)
     {
         list_name[i++] = entry; 
     }
-
-    closedir(dir);
-
     if(flag_t == 1)
-        qsort(list_name, n, sizeof(struct dirent *), compare_mtime);
+        list_name_sort(list_name, i);
 
-    for(int i = 0; i < n; i++)
+    for(int j = 0; j < n; j++)
     {
-        if(flag_a == 0 && list_name[i]->d_name[0] == '.')
+        if(flag_a == 0 && list_name[j]->d_name[0] == '.')
             continue;
-        printf("%s\n", list_name[i]->d_name);
+        printf("%s\n", list_name[j]->d_name);
     }
 
+    closedir(dir);
     free(list_name);
 }
 

@@ -86,7 +86,8 @@ int main(int argc, char *argv[])
     for (int k = 0; k < j; k++)
     {
         judge_file(use_arg[k]);
-        printf("\n");
+        if(k == 1)
+            printf("\n");
     } 
     // 释放动态分配的内存
     free(use_arg);

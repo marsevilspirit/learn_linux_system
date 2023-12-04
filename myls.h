@@ -16,3 +16,5 @@ void file_list(char * use_arg);
 
 void dir_list(char * use_arg); 
 
+void list_name_sort(struct dirent ** list_name, int i);
+
