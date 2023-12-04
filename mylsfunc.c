@@ -2,7 +2,7 @@
 #include <dirent.h>
 #include <stdio.h>
 
-extern int flag_a;
+extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
 void judge_file(char * use_arg)//判断是文件还是目录
 {

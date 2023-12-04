@@ -2,7 +2,7 @@
 
 extern int optind, opterr, optopt;
 extern char * optarg;
-int flag_a = 0, flag_l = 0;
+int flag_a = 0, flag_l = 0, flag_R = 0, flag_t = 0, flag_r = 0, flag_i = 0, flag_s = 0;
 
 int main(int argc, char *argv[])
 {
@@ -60,19 +60,19 @@ int main(int argc, char *argv[])
                 flag_l = 1;
                 break;
             case 'R':
-                printf("we use R\n");
+                flag_R = 1; 
                 break;
             case 't':
-                printf("we use t\n");
+                flag_t = 1;
                 break;
             case 'r':
-                printf("we use r\n");
+                flag_r = 1;
                 break;
             case 'i':
-                printf("we use i\n");
+                flag_i = 1;
                 break;
             case 's':
-                printf("we use s\n");
+                flag_s = 1;
                 break;
             case '?':
                 printf("------------please don't do this-------------\n");
