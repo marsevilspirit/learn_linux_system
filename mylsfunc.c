@@ -68,22 +68,28 @@ void list_l(struct dirent *list_name)//-l
         case S_IFIFO:  printf("p");         break;
         case S_IFSOCK: printf("s");         break;
     }
-        printf("%c",(list_l.st_mode & S_IRUSR) ? 'r' : '-');
-        printf("%c",(list_l.st_mode & S_IWUSR) ? 'w' : '-');
-        printf("%c",(list_l.st_mode & S_IXUSR) ? 'x' : '-');
-        printf("%c",(list_l.st_mode & S_IRGRP) ? 'r' : '-');
-        printf("%c",(list_l.st_mode & S_IWGRP) ? 'w' : '-');
-        printf("%c",(list_l.st_mode & S_IXGRP) ? 'x' : '-');
-        printf("%c",(list_l.st_mode & S_IROTH) ? 'r' : '-');
-        printf("%c",(list_l.st_mode & S_IWOTH) ? 'w' : '-');
-        printf("%c",(list_l.st_mode & S_IXOTH) ? 'x' : '-');
-        printf(" %ld",list_l.st_nlink);
+    printf("%c",(list_l.st_mode & S_IRUSR) ? 'r' : '-');
+    printf("%c",(list_l.st_mode & S_IWUSR) ? 'w' : '-');
+    printf("%c",(list_l.st_mode & S_IXUSR) ? 'x' : '-');
+    printf("%c",(list_l.st_mode & S_IRGRP) ? 'r' : '-');
+    printf("%c",(list_l.st_mode & S_IWGRP) ? 'w' : '-');
+    printf("%c",(list_l.st_mode & S_IXGRP) ? 'x' : '-');
+    printf("%c",(list_l.st_mode & S_IROTH) ? 'r' : '-');
+    printf("%c",(list_l.st_mode & S_IWOTH) ? 'w' : '-');
+    printf("%c",(list_l.st_mode & S_IXOTH) ? 'x' : '-');
+    printf(" %ld",list_l.st_nlink);
 
-        struct passwd * owner_info = getpwuid(list_l.st_uid);
-        printf(" %s", owner_info->pw_name);
-        struct group * group_info = getgrgid(list_l.st_gid);
-        printf(" %s", group_info->gr_name);
-        printf(" ");
+    struct passwd * owner_info = getpwuid(list_l.st_uid);
+    printf(" %s", owner_info->pw_name);
+    struct group * group_info = getgrgid(list_l.st_gid);
+    printf(" %s", group_info->gr_name);
+    printf(" %5ld", list_l.st_size);
+    
+    struct tm * tm_info = localtime(&list_l.st_mtime);
+    char time_buffer[26];
+    strftime(time_buffer, sizeof(time_buffer), "%_m月%_d日 %_H:%M", tm_info);
+    printf(" %s", time_buffer);   
+    printf(" ");
 }
 
 void judge_file(char * use_arg)//判断是文件还是目录
