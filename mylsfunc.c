@@ -51,7 +51,7 @@ void list_name_sort(struct dirent ** list_name, int len, const char *dir_path)
     }
 }
 
-void list_l(struct dirent **list_name)//-l
+void list_l(struct dirent *list_name)//-l
 {
 
 }
@@ -73,8 +73,25 @@ void judge_file(char * use_arg)//判断是文件还是目录
     }
 }
 
-void print_color(struct dirent ** list_name)
+void print_color(struct dirent * list_name)
 {
+    struct stat pr_color;
+    stat(list_name->d_name, &pr_color);
+
+    switch (pr_color.st_mode & S_IFMT)
+    {
+        case S_IFREG: 
+            if (pr_color.st_mode & S_IXUSR) 
+            {
+                printf(GREEN "%s" RESET "\n", list_name->d_name);  // 可执行文件
+            } 
+            else 
+            {
+                printf("%s\n", list_name->d_name);  // 普通文件
+            }              
+            break;
+        case S_IFDIR: printf(BLUE"%s"RESET"\n",list_name->d_name);    break; 
+    }
 
 }
 
@@ -119,8 +136,8 @@ void dir_list(char * use_arg)
         if(flag_a == 0 && list_name[j]->d_name[0] == '.')
             continue;
         if(flag_l == 1)
-            list_l(list_name);
-        print_color(list_name);
+            list_l(list_name[j]);
+        print_color(list_name[j]);
     }
 
     closedir(dir);

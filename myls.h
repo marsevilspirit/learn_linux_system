@@ -12,6 +12,7 @@
 
 #define BLUE    "\x1b[34m"
 #define GREEN   "\x1b[32m"
+#define RESET   "\x1b[0m"
 
 //show list
 void judge_file(char * use_arg);
@@ -24,6 +25,6 @@ void list_name_sort(struct dirent ** list_name, int i, const char *dir_path);//�
 
 void name_strcmp_sort(struct dirent **list_name, int len);//按字母顺序排序
 
-void list_l(struct dirent **list_name);
+void list_l(struct dirent *list_name);
 
-void print_color(struct dirent ** list_name);
+void print_color(struct dirent * list_name);
