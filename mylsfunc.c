@@ -58,14 +58,14 @@ void list_l(struct dirent *list_name, const char *dir_path)//-l
     char path_l[PATH_MAX];
     sprintf(path_l, "%s/%s", dir_path, list_name->d_name);
     struct stat list_l;
-    if(stat(path_l, &list_l) == -1)
+    if(lstat(path_l, &list_l) == -1)
     {
         perror("stat3");
         exit(EXIT_FAILURE);
     }
 
     if(flag_i == 1) 
-        printf("%ld ", (long)list_l.st_ino);
+        printf("%-3ld ", (long)list_l.st_ino);
 
     switch(list_l.st_mode & S_IFMT)
     {
