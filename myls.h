@@ -12,6 +12,7 @@
 
 #define BLUE    "\x1b[34m"
 #define GREEN   "\x1b[32m"
+#define YELLOW  "\x1b[33m"
 #define RESET   "\x1b[0m"
 
 //show list
@@ -27,4 +28,4 @@ void name_strcmp_sort(struct dirent **list_name, int len);//按字母顺序排�
 
 void list_l(struct dirent *list_name);
 
-void print_color(struct dirent * list_name);
+void print_color(struct dirent * list_name);//打印颜色

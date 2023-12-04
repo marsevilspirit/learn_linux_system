@@ -87,7 +87,7 @@ void print_color(struct dirent * list_name)
             } 
             else 
             {
-                printf("%s\n", list_name->d_name);  // 普通文件
+                printf(YELLOW"%s"RESET"\n", list_name->d_name);  // 普通文件
             }              
             break;
         case S_IFDIR: printf(BLUE"%s"RESET"\n",list_name->d_name);    break; 
