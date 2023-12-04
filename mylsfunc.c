@@ -53,11 +53,16 @@ void list_name_sort(struct dirent ** list_name, int len, const char *dir_path)
     }
 }
 
-void list_l(struct dirent *list_name)//-l
+void list_l(struct dirent *list_name, const char *dir_path)//-l
 {
+    char path_l[PATH_MAX];
+    sprintf(path_l, "%s/%s", dir_path, list_name->d_name);
     struct stat list_l;
-    stat(list_name->d_name, &list_l); 
-
+    if(stat(path_l, &list_l) == -1)
+    {
+        perror("stat3");
+        exit(EXIT_FAILURE);
+    }
     switch(list_l.st_mode & S_IFMT)
     {
         case S_IFREG:  printf("-");         break;
@@ -77,14 +82,14 @@ void list_l(struct dirent *list_name)//-l
     printf("%c",(list_l.st_mode & S_IROTH) ? 'r' : '-');
     printf("%c",(list_l.st_mode & S_IWOTH) ? 'w' : '-');
     printf("%c",(list_l.st_mode & S_IXOTH) ? 'x' : '-');
-    printf(" %ld",list_l.st_nlink);
+    printf(" %3ld",list_l.st_nlink);
 
     struct passwd * owner_info = getpwuid(list_l.st_uid);
     printf(" %s", owner_info->pw_name);
     struct group * group_info = getgrgid(list_l.st_gid);
     printf(" %s", group_info->gr_name);
-    printf(" %5ld", list_l.st_size);
-    
+    printf(" %6ld", list_l.st_size);
+
     struct tm * tm_info = localtime(&list_l.st_mtime);
     char time_buffer[26];
     strftime(time_buffer, sizeof(time_buffer), "%_m月%_d日 %_H:%M", tm_info);
@@ -96,7 +101,7 @@ void judge_file(char * use_arg)//判断是文件还是目录
 {
     struct stat arg; 
     if(stat(use_arg, &arg) != 0)
-        perror("stat");
+        perror("stat1");
 
     switch (arg.st_mode & S_IFMT)
     {
@@ -109,16 +114,17 @@ void judge_file(char * use_arg)//判断是文件还是目录
     }
 }
 
-void print_color(struct dirent * list_name)
+void print_color(struct dirent * list_name, const char *dir_path)
 {
+    char path_color[PATH_MAX];
+    sprintf(path_color, "%s/%s", dir_path, list_name->d_name);
     struct stat pr_color;
     int pstat;
     memset(&pr_color, 0, sizeof(struct stat));
-    if(stat(list_name->d_name, &pr_color) == -1)
+    if(stat(path_color, &pr_color) == -1)
     {
         perror("stat2");
     }
-printf(GREEN "%s" RESET "\n", list_name->d_name);
     switch (pr_color.st_mode & S_IFMT)
     {
         case S_IFREG: 
@@ -177,8 +183,8 @@ void dir_list(char * use_arg)
         if(flag_a == 0 && list_name[j]->d_name[0] == '.')
             continue;
         if(flag_l == 1)
-            list_l(list_name[j]);
-        print_color(list_name[j]);
+            list_l(list_name[j], use_arg);
+        print_color(list_name[j], use_arg);
     }
 
     closedir(dir);
