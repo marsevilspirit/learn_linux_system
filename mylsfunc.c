@@ -112,8 +112,13 @@ void judge_file(char * use_arg)//判断是文件还是目录
 void print_color(struct dirent * list_name)
 {
     struct stat pr_color;
-    stat(list_name->d_name, &pr_color);
-
+    int pstat;
+    memset(&pr_color, 0, sizeof(struct stat));
+    if(stat(list_name->d_name, &pr_color) == -1)
+    {
+        perror("stat2");
+    }
+printf(GREEN "%s" RESET "\n", list_name->d_name);
     switch (pr_color.st_mode & S_IFMT)
     {
         case S_IFREG: 
@@ -121,7 +126,7 @@ void print_color(struct dirent * list_name)
             {
                 printf(GREEN "%s" RESET "\n", list_name->d_name);  // 可执行文件
             } 
-            else 
+            else  
             {
                 printf(YELLOW"%s"RESET"\n", list_name->d_name);  // 普通文件
             }              
