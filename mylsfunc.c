@@ -51,6 +51,11 @@ void list_name_sort(struct dirent ** list_name, int len, const char *dir_path)
     }
 }
 
+void list_l(struct dirent **list_name)//-l
+{
+
+}
+
 void judge_file(char * use_arg)//判断是文件还是目录
 {
     struct stat arg; 
@@ -66,6 +71,11 @@ void judge_file(char * use_arg)//判断是文件还是目录
             file_list(use_arg);
             break;
     }
+}
+
+void print_color(struct dirent ** list_name)
+{
+
 }
 
 void file_list(char * use_arg)
@@ -108,12 +118,15 @@ void dir_list(char * use_arg)
     {
         if(flag_a == 0 && list_name[j]->d_name[0] == '.')
             continue;
-        printf("%s\n", list_name[j]->d_name);
+        if(flag_l == 1)
+            list_l(list_name);
+        print_color(list_name);
     }
 
     closedir(dir);
     free(list_name);
 }
+
 
 
 
