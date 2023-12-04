@@ -63,6 +63,10 @@ void list_l(struct dirent *list_name, const char *dir_path)//-l
         perror("stat3");
         exit(EXIT_FAILURE);
     }
+
+    if(flag_i == 1) 
+        printf("%ld ", (long)list_l.st_ino);
+
     switch(list_l.st_mode & S_IFMT)
     {
         case S_IFREG:  printf("-");         break;
