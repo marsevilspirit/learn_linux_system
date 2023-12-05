@@ -281,7 +281,6 @@ void dir_list(char * use_arg)
 
     if (flag_R == 1)
     {
-        rewinddir(dir);
         for (int j = 0; j < n; j++)
         {
             if (flag_a == 0 && list_name[j]->d_name[0] == '.')
