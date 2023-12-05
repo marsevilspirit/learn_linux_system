@@ -4,6 +4,47 @@
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
+void stack_init(Stack* stack)
+{
+    stack->top = -1;
+}
+
+int stack_empty(Stack* stack)
+{
+    return stack->top == -1;
+}
+
+int stack_full(Stack* stack)
+{
+    return stack->top == MAX_STACK_SIZE - 1;
+}
+
+void stack_push(Stack* stack, const char* path, int index)
+{
+    if (stack_full(stack))
+    {
+        fprintf(stderr, "Stack is full\n");
+        exit(EXIT_FAILURE);
+    }
+
+    stack->top++;
+    strcpy(stack->entries[stack->top].path, path);
+    stack->entries[stack->top].index = index;
+}
+
+void stack_pop(Stack* stack, char* path, int* index)
+{
+    if (stack_empty(stack)) 
+    {
+        fprintf(stderr, "Stack is empty\n");
+        exit(EXIT_FAILURE);
+    }
+
+    strcpy(path, stack->entries[stack->top].path);
+    *index = stack->entries[stack->top].index;
+    stack->top--;
+}
+
 void name_strcmp_sort(struct dirent **list_name, int len) 
 {
     for (int i = 0; i < len - 1; i++) 
@@ -180,6 +221,9 @@ void dir_list(char * use_arg)
     struct dirent ** list_name;//用于储存文件名,方便排序
     int n = 0, i = 0;//n记录文件数目,i为储存文件下标
 
+    Stack stack;
+    stack_init(&stack);
+
     dir = opendir(use_arg);
     if(dir == NULL) 
         perror("opendir");
@@ -247,9 +291,17 @@ void dir_list(char * use_arg)
                 printf("\n"BLUE"%s"RESET":\n", list_name[j]->d_name);
                 char next_path[PATH_MAX];
                 sprintf(next_path, "%s/%s", use_arg, list_name[j]->d_name);
-                dir_list(next_path);
+                stack_push(&stack, next_path, j);// 模拟递归，将下一个子目录路径和索引入栈
             }
         }
+    }
+
+    while (!stack_empty(&stack))
+    {
+        char next_path[PATH_MAX];
+        int next_index;
+        stack_pop(&stack, next_path, &next_index);
+        dir_list(next_path);
     }
 
     closedir(dir);
