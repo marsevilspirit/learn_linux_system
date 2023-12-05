@@ -1,11 +1,4 @@
 #include "myls.h"
-#include <dirent.h>
-#include <grp.h>
-#include <pwd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <time.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
@@ -61,7 +54,7 @@ void list_i(struct dirent *list_name,  const char *dir_path)
     struct stat list_i;
     if(lstat(path_i, &list_i) == -1)
     {
-        perror("stat4");
+        perror("stat_i");
         exit(EXIT_FAILURE);
     }
 
@@ -75,7 +68,7 @@ void list_s(struct dirent *list_name,  const char *dir_path)
     struct stat list_s;
     if(lstat(path_s, &list_s) == -1)
     {
-        perror("stat4");
+        perror("stat_s");
         exit(EXIT_FAILURE);
     }
 
@@ -89,7 +82,7 @@ void list_l(struct dirent *list_name, const char *dir_path)//-l
     struct stat list_l;
     if(lstat(path_l, &list_l) == -1)
     {
-        perror("stat3");
+        perror("stat_l");
         exit(EXIT_FAILURE);
     }
 
@@ -132,7 +125,7 @@ void judge_file(char * use_arg)//判断是文件还是目录
     struct stat arg; 
     if(stat(use_arg, &arg) != 0)
     {
-        perror("stat1");
+        perror("不是我的问题");
         return;
     }
     switch (arg.st_mode & S_IFMT)
@@ -155,7 +148,7 @@ void print_color(struct dirent * list_name, const char *dir_path)
     memset(&pr_color, 0, sizeof(struct stat));
     if(stat(path_color, &pr_color) == -1)
     {
-        perror("stat2");
+        perror("stat_color");
     }
     switch (pr_color.st_mode & S_IFMT)
     {
@@ -210,17 +203,35 @@ void dir_list(char * use_arg)
     if(flag_t == 1)
         list_name_sort(list_name, i, use_arg);
 
-    for(int j = 0; j < n; j++)
+    if(flag_r == 1)
     {
-        if(flag_a == 0 && list_name[j]->d_name[0] == '.')
-            continue;
-        if (flag_i == 1)
-            list_i(list_name[j], use_arg);   
-        if(flag_s == 1)
-            list_s(list_name[j], use_arg);
-        if(flag_l == 1)
-            list_l(list_name[j], use_arg);
-        print_color(list_name[j], use_arg);
+        for(int j = n-1; j >= 0; j--)
+        {
+            if(flag_a == 0 && list_name[j]->d_name[0] == '.')
+                continue;
+            if (flag_i == 1)
+                list_i(list_name[j], use_arg);   
+            if(flag_s == 1)
+                list_s(list_name[j], use_arg);
+            if(flag_l == 1)
+                list_l(list_name[j], use_arg);
+            print_color(list_name[j], use_arg);
+        }
+    }
+    else
+    {
+        for(int j = 0; j < n; j++)
+        {
+            if(flag_a == 0 && list_name[j]->d_name[0] == '.')
+                continue;
+            if (flag_i == 1)
+                list_i(list_name[j], use_arg);   
+            if(flag_s == 1)
+                list_s(list_name[j], use_arg);
+            if(flag_l == 1)
+                list_l(list_name[j], use_arg);
+            print_color(list_name[j], use_arg);
+        } 
     }
 
     closedir(dir);
