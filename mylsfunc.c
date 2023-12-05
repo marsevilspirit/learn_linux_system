@@ -68,6 +68,20 @@ void list_i(struct dirent *list_name,  const char *dir_path)
     printf("%-3ld ", (long)list_i.st_ino);
 }
 
+void list_s(struct dirent *list_name,  const char *dir_path)
+{
+    char path_s[PATH_MAX];
+    sprintf(path_s, "%s/%s", dir_path, list_name->d_name);
+    struct stat list_s;
+    if(lstat(path_s, &list_s) == -1)
+    {
+        perror("stat4");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("%4ld ", (long)list_s.st_blocks);
+}
+
 void list_l(struct dirent *list_name, const char *dir_path)//-l
 {
     char path_l[PATH_MAX];
@@ -200,6 +214,8 @@ void dir_list(char * use_arg)
             continue;
         if (flag_i == 1)
             list_i(list_name[j], use_arg);   
+        if(flag_s == 1)
+            list_s(list_name[j], use_arg);
         if(flag_l == 1)
             list_l(list_name[j], use_arg);
         print_color(list_name[j], use_arg);
