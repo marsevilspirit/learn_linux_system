@@ -1,4 +1,5 @@
 #include "myls.h"
+#include <stdio.h>
 
 extern int optind, opterr, optopt;
 extern char * optarg;
@@ -85,8 +86,8 @@ int main(int argc, char *argv[])
 
     for (int k = 0; k < j; k++)
     {
+        printf("%s:\n",use_arg[k]);
         judge_file(use_arg[k]);
-        if(k == 1)
             printf("\n");
     } 
     // 释放动态分配的内存
