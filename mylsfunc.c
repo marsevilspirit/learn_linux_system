@@ -242,7 +242,7 @@ void dir_list(char * use_arg)
         {
             if (flag_a == 0 && list_name[j]->d_name[0] == '.')
                 continue;
-            if (list_name[j]->d_type == DT_DIR)
+            if (list_name[j]->d_type == DT_DIR && strcmp(list_name[j]->d_name, ".") != 0 && strcmp(list_name[j]->d_name, "..") != 0)
             {
                 printf("\n"BLUE"%s"RESET":\n", list_name[j]->d_name);
                 char next_path[PATH_MAX];
