@@ -79,7 +79,7 @@ void list_s(struct dirent *list_name,  const char *dir_path)
         exit(EXIT_FAILURE);
     }
 
-    printf("%4ld ", (long)list_s.st_blocks);
+    printf("%4ld ", (long)list_s.st_blocks/2);//为什么不一样
 }
 
 void list_l(struct dirent *list_name, const char *dir_path)//-l
