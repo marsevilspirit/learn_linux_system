@@ -122,7 +122,7 @@ void list_l(struct dirent *list_name, const char *dir_path)//-l
 
     struct tm * tm_info = localtime(&list_l.st_mtime);
     char time_buffer[26];
-    strftime(time_buffer, sizeof(time_buffer), "%_m月%_d日 %_H:%M", tm_info);
+    strftime(time_buffer, sizeof(time_buffer), "%_m月%_d日 %H:%M", tm_info);
     printf(" %s", time_buffer);   
     printf(" ");
 }
@@ -131,8 +131,10 @@ void judge_file(char * use_arg)//判断是文件还是目录
 {
     struct stat arg; 
     if(stat(use_arg, &arg) != 0)
+    {
         perror("stat1");
-
+        return;
+    }
     switch (arg.st_mode & S_IFMT)
     {
         case S_IFDIR:
