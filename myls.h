@@ -17,27 +17,6 @@
 #define MAX_STACK_SIZE 1000
 #define MAX_PATH_LENGTH 256
 
-typedef struct {
-    char path[MAX_PATH_LENGTH];
-    int index;
-} StackEntry;
-
-typedef struct {
-    StackEntry entries[MAX_STACK_SIZE];
-    int top;
-} Stack;
-
-void stack_init(Stack* stack);
-
-int stack_empty(Stack* stack);
-
-int stack_full(Stack* stack);
-
-void stack_push(Stack* stack, const char* path, int index);
-
-void stack_pop(Stack* stack, char* path, int* index);
-
-
 //show list
 void judge_file(char * use_arg);
 
