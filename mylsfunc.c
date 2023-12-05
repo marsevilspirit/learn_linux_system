@@ -1,4 +1,5 @@
 #include "myls.h"
+#include <dirent.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
@@ -58,7 +59,7 @@ void list_i(struct dirent *list_name,  const char *dir_path)
         exit(EXIT_FAILURE);
     }
 
-    printf("%-3ld ", (long)list_i.st_ino);
+    printf("%6ld ", (long)list_i.st_ino);
 }
 
 void list_s(struct dirent *list_name,  const char *dir_path)
@@ -232,6 +233,12 @@ void dir_list(char * use_arg)
                 list_l(list_name[j], use_arg);
             print_color(list_name[j], use_arg);
         } 
+    }
+    
+    if(flag_R == 1)
+    {
+        rewinddir(dir);
+
     }
 
     closedir(dir);
