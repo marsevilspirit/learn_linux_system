@@ -1,6 +1,7 @@
 #include "myls.h"
 #include <dirent.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
@@ -85,7 +86,7 @@ void list_l(struct dirent *list_name, const char *dir_path)//-l
     if(lstat(path_l, &list_l) == -1)
     {
         perror("stat_l");
-        exit(EXIT_FAILURE);
+        return;
     }
 
     switch(list_l.st_mode & S_IFMT)
@@ -146,11 +147,10 @@ void print_color(struct dirent * list_name, const char *dir_path)
     char path_color[PATH_MAX];
     sprintf(path_color, "%s/%s", dir_path, list_name->d_name);
     struct stat pr_color;
-    memset(&pr_color, 0, sizeof(struct stat));
     if(stat(path_color, &pr_color) == -1)
     {
-        perror("stat_color");
-        return;
+        perror(path_color);
+        exit(EXIT_FAILURE);
     }
     switch (pr_color.st_mode & S_IFMT)
     {
@@ -239,8 +239,9 @@ void dir_list(char * use_arg)
         }
     }
 
-    name_strcmp_sort(list_name, i);
-    if(flag_t == 1)
+    if(flag_t == 0)
+        name_strcmp_sort(list_name, i);
+    else
         list_name_sort(list_name, i, use_arg);
 
     if(flag_r == 1)
