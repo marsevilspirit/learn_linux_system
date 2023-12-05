@@ -53,6 +53,21 @@ void list_name_sort(struct dirent ** list_name, int len, const char *dir_path)
     }
 }
 
+
+void list_i(struct dirent *list_name,  const char *dir_path)
+{
+    char path_i[PATH_MAX];
+    sprintf(path_i, "%s/%s", dir_path, list_name->d_name);
+    struct stat list_i;
+    if(lstat(path_i, &list_i) == -1)
+    {
+        perror("stat4");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("%-3ld ", (long)list_i.st_ino);
+}
+
 void list_l(struct dirent *list_name, const char *dir_path)//-l
 {
     char path_l[PATH_MAX];
@@ -63,9 +78,6 @@ void list_l(struct dirent *list_name, const char *dir_path)//-l
         perror("stat3");
         exit(EXIT_FAILURE);
     }
-
-    if(flag_i == 1) 
-        printf("%-3ld ", (long)list_l.st_ino);
 
     switch(list_l.st_mode & S_IFMT)
     {
@@ -186,6 +198,8 @@ void dir_list(char * use_arg)
     {
         if(flag_a == 0 && list_name[j]->d_name[0] == '.')
             continue;
+        if (flag_i == 1)
+            list_i(list_name[j], use_arg);   
         if(flag_l == 1)
             list_l(list_name[j], use_arg);
         print_color(list_name[j], use_arg);
