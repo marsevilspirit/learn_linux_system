@@ -168,6 +168,12 @@ void print_color(struct dirent * list_name, const char *dir_path)
 
 }
 
+void list_R(DIR * dir)
+{
+
+}
+
+
 void file_list(char * use_arg)
 {
     printf("%s", use_arg);
@@ -238,7 +244,7 @@ void dir_list(char * use_arg)
     if(flag_R == 1)
     {
         rewinddir(dir);
-
+        list_R(dir);
     }
 
     closedir(dir);

@@ -20,10 +20,7 @@ int main(int argc, char *argv[])
         i++;
     }
 
-    if(j > 0)
-        use_arg = (char **)malloc(j * sizeof(char *)); // 储存非命令行选项的命令行参数
-    else
-        use_arg = (char **)malloc(sizeof(char *));
+    use_arg = (char **)malloc(((j == 0)?1:j) * sizeof(char *)); // 储存非命令行选项的命令行参数
 
     if (argc == 1) 
     {
