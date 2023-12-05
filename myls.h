@@ -32,6 +32,6 @@ void list_s(struct dirent *list_name,  const char *dir_path);
 
 void list_l(struct dirent *list_name,  const char *dir_path);
 
-void list_R(DIR * dir);
+void list_R(DIR * dir, const char *dir_path);
 
 void print_color(struct dirent * list_name, const char *dir_path);//打印颜色

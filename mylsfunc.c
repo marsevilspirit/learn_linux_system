@@ -1,5 +1,6 @@
 #include "myls.h"
 #include <dirent.h>
+#include <stdio.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
@@ -145,7 +146,6 @@ void print_color(struct dirent * list_name, const char *dir_path)
     char path_color[PATH_MAX];
     sprintf(path_color, "%s/%s", dir_path, list_name->d_name);
     struct stat pr_color;
-    int pstat;
     memset(&pr_color, 0, sizeof(struct stat));
     if(stat(path_color, &pr_color) == -1)
     {
@@ -167,12 +167,6 @@ void print_color(struct dirent * list_name, const char *dir_path)
     }
 
 }
-
-void list_R(DIR * dir)
-{
-
-}
-
 
 void file_list(char * use_arg)
 {
@@ -240,11 +234,22 @@ void dir_list(char * use_arg)
             print_color(list_name[j], use_arg);
         } 
     }
-    
-    if(flag_R == 1)
+
+    if (flag_R == 1)
     {
         rewinddir(dir);
-        list_R(dir);
+        for (int j = 0; j < n; j++)
+        {
+            if (flag_a == 0 && list_name[j]->d_name[0] == '.')
+                continue;
+            if (list_name[j]->d_type == DT_DIR)
+            {
+                printf("\n"BLUE"%s"RESET":\n", list_name[j]->d_name);
+                char next_path[PATH_MAX];
+                sprintf(next_path, "%s/%s", use_arg, list_name[j]->d_name);
+                dir_list(next_path);
+            }
+        }
     }
 
     closedir(dir);
