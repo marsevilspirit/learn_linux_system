@@ -184,6 +184,7 @@ void dir_list(char * use_arg)
         perror("opendir");
         return;
     }
+    // 拼接文件路径
 
     while ((entry = readdir(dir)) != NULL)
     {   
@@ -272,7 +273,7 @@ void dir_list(char * use_arg)
     }
 
     closedir(dir);
-        
+
     for(int j = 0; j < i; j++)
     {
         free(list_name[j]);
