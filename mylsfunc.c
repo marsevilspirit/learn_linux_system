@@ -1,4 +1,6 @@
 #include "myls.h"
+#include <stdio.h>
+#include <unistd.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
@@ -111,7 +113,7 @@ void list_l(struct dirent *list_name, const char *dir_path)//-l
     printf(" %s", owner_info->pw_name);
     struct group * group_info = getgrgid(list_l.st_gid);
     printf(" %s", group_info->gr_name);
-    printf(" %6ld", list_l.st_size);
+    printf(" %8ld", list_l.st_size);
 
     struct tm * tm_info = localtime(&list_l.st_mtime);
     char time_buffer[26];
@@ -177,6 +179,17 @@ void dir_list(char * use_arg)
     struct dirent ** list_name;//用于储存文件名,方便排序
     struct stat file_stat;
     int n = 0, i = 0;//n记录文件数目,i为储存文件下标
+
+    if(stat(use_arg, &file_stat) == -1)
+    {
+        perror("stat_list");
+        return;
+    }
+
+    if(access(use_arg, R_OK) == -1)
+    {
+        return;
+    }
 
     dir = opendir(use_arg);
     if(dir == NULL) 
