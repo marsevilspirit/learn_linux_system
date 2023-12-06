@@ -1,5 +1,4 @@
 #include "myls.h"
-#include <stdio.h>
 
 extern int optind, opterr, optopt;
 extern char * optarg;

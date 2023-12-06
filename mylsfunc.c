@@ -1,6 +1,4 @@
 #include "myls.h"
-#include <stdio.h>
-#include <unistd.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
@@ -179,17 +177,6 @@ void dir_list(char * use_arg)
     struct dirent ** list_name;//用于储存文件名,方便排序
     struct stat file_stat;
     int n = 0, i = 0;//n记录文件数目,i为储存文件下标
-
-    if(stat(use_arg, &file_stat) == -1)
-    {
-        perror("stat_list");
-        return;
-    }
-
-    if(access(use_arg, R_OK) == -1)
-    {
-        return;
-    }
 
     dir = opendir(use_arg);
     if(dir == NULL) 
