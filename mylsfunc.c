@@ -1,7 +1,4 @@
 #include "myls.h"
-#include <dirent.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
@@ -128,7 +125,7 @@ void judge_file(char * use_arg)//判断是文件还是目录
     struct stat arg; 
     if(stat(use_arg, &arg) != 0)
     {
-        perror("不是我的问题");
+        perror("stat1");
         return;
     }
     switch (arg.st_mode & S_IFMT)
@@ -150,7 +147,7 @@ void print_color(struct dirent * list_name, const char *dir_path)
     if(stat(path_color, &pr_color) == -1)
     {
         perror(path_color);
-        exit(EXIT_FAILURE);
+        return;
     }
     switch (pr_color.st_mode & S_IFMT)
     {
@@ -166,7 +163,6 @@ void print_color(struct dirent * list_name, const char *dir_path)
             break;
         case S_IFDIR: printf(BLUE"%s"RESET"\n",list_name->d_name);    break; 
     }
-
 }
 
 void file_list(char * use_arg)
@@ -191,19 +187,7 @@ void dir_list(char * use_arg)
 
     while ((entry = readdir(dir)) != NULL)
     {   
-        char file_path[PATH_MAX];
-        snprintf(file_path, PATH_MAX, "%s/%s", use_arg, entry->d_name);
-
-        if (lstat(file_path, &file_stat) == -1)
-        {
-            perror("lstat");
-            continue;
-        }
-
-        if (access(file_path, R_OK) != -1)
-        {
-            n++;
-        }
+        n++;
     }
 
     closedir(dir);
@@ -224,19 +208,15 @@ void dir_list(char * use_arg)
 
     while ((entry = readdir(dir)) != NULL)
     {
-        char file_path[PATH_MAX];
-        snprintf(file_path, PATH_MAX, "%s/%s", use_arg, entry->d_name);
-
-        if (lstat(file_path, &file_stat) == -1)
+        list_name[i] = (struct dirent *)malloc(sizeof(struct dirent));
+        if (list_name[i] == NULL) 
         {
-            perror("lstat");
-            continue;
+            perror("malloc");
+            exit(EXIT_FAILURE);
         }
-
-        if (access(file_path, R_OK) != -1)
-        {
-            list_name[i++] = entry;
-        }
+        memcpy(list_name[i], entry, sizeof(struct dirent));
+        //        printf("%d:%s\n", i, entry->d_name);
+        i++;
     }
 
     if(flag_t == 0)
@@ -292,6 +272,11 @@ void dir_list(char * use_arg)
     }
 
     closedir(dir);
+        
+    for(int j = 0; j < i; j++)
+    {
+        free(list_name[j]);
+    }
     free(list_name);
 }
 
