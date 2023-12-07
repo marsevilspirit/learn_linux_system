@@ -115,8 +115,9 @@ void list_l(struct dirent *list_name, const char *dir_path)//-l
 
     struct passwd * owner_info = getpwuid(list_l.st_uid);
     printf(" %s", owner_info->pw_name);
-    struct group * group_info = getgrgid(list_l.st_gid);
-    printf(" %s", group_info->gr_name);
+    //struct group * group_info = getgrgid(list_l.st_gid);//这是一个废物和函数，不要去用它
+    //printf(" %s", group_info->gr_name);
+    printf(" %s", owner_info->pw_name);
     printf(" %8ld", list_l.st_size);
 
     struct tm * tm_info = localtime(&list_l.st_mtime);
@@ -312,6 +313,7 @@ void dir_list(char * use_arg)
     }
     free(list_name);
 }
+
 
 
 
