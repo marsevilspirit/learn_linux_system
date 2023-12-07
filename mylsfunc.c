@@ -27,13 +27,21 @@ void list_name_sort(struct dirent ** list_name, int len, const char *dir_path)
             char path_i[PATH_MAX];
             sprintf(path_i, "%s/%s", dir_path, list_name[i]->d_name);
             struct stat stat_i;
-            lstat(path_i, &stat_i);
+            if(lstat(path_i, &stat_i) == -1)
+            {
+                perror("stat_i");
+                exit(EXIT_FAILURE);
+            }
             time_t mtime_i = stat_i.st_mtime;
 
             char path_j[PATH_MAX];
             sprintf(path_j, "%s/%s", dir_path, list_name[j]->d_name);
             struct stat stat_j;
-            lstat(path_j, &stat_j);
+            if(lstat(path_j, &stat_j) == -1)
+            {
+                perror("stat_j");
+                exit(EXIT_FAILURE);
+            } 
             time_t mtime_j = stat_j.st_mtime;
 
             if (mtime_i < mtime_j)
@@ -219,6 +227,7 @@ void dir_list(char * use_arg)
         // 检查文件访问权限
         if (access(file_path, R_OK) == -1)
         {
+            printf("%s没有权限，无法打开\n", file_path);
             continue;// 跳过无权访问的文件
         }
         list_name[i] = (struct dirent *)malloc(sizeof(struct dirent));
@@ -276,10 +285,17 @@ void dir_list(char * use_arg)
                 continue;
             if (list_name[j]->d_type == DT_DIR && strcmp(list_name[j]->d_name, ".") != 0 && strcmp(list_name[j]->d_name, "..") != 0)
             {
-                printf("\n"BLUE"%s"RESET":\n", list_name[j]->d_name);
+                
                 char next_path[PATH_MAX];
+                char resolved_path[PATH_MAX];
                 sprintf(next_path, "%s/%s", use_arg, list_name[j]->d_name);
-                judge_file(next_path);
+                char* result = realpath(next_path, resolved_path);
+                printf("\n"BLUE"%s"RESET":\n", resolved_path);
+                if (result == NULL) 
+                {
+                    perror("realpath");
+                }
+                dir_list(next_path);
             }
         }
     }

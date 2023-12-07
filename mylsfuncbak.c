@@ -1,4 +1,5 @@
 #include "myls.h"
+#include <stdio.h>
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
 void list_l(struct dirent *list_name, const char *dir_path)//-l
@@ -6,17 +7,13 @@ void list_l(struct dirent *list_name, const char *dir_path)//-l
     char path_l[PATH_MAX];
     sprintf(path_l, "%s/%s", dir_path, list_name->d_name);
     struct stat list_l;
-    if(lstat(path_l, &list_l) == -1)
+    if(stat(path_l, &list_l) == -1)
     {
         perror("stat_l");
+        perror(path_l);
         return;
     }
 
-    struct passwd * owner_info = getpwuid(list_l.st_uid);
-    printf(" %s", owner_info->pw_name);
-    struct group * group_info = getgrgid(list_l.st_gid);
-    printf(" %s", group_info->gr_name);
-    printf(" %8ld", list_l.st_size);
 
     struct tm * tm_info = localtime(&list_l.st_mtime);
     char time_buffer[26];
@@ -48,6 +45,7 @@ void print_color(struct dirent * list_name, const char *dir_path)
     struct stat pr_color;
     if(stat(path_color, &pr_color) == -1)
     {
+        perror("print_color");
         perror(path_color);
         return;
     }
@@ -85,7 +83,17 @@ void dir_list(char * use_arg)
 
     while ((entry = readdir(dir)) != NULL)
     {   
-       n++;
+        // 拼接文件路径
+        char file_path[PATH_MAX];
+        sprintf(file_path, "%s/%s", use_arg, entry->d_name);
+
+        // 检查文件访问权限
+        if (access(file_path, R_OK) == -1)
+        {
+            printf("%s没有权限，无法打开\n", file_path);
+            continue;// 跳过无权访问的文件
+        }
+        n++;
     }
 
     rewinddir(dir);
@@ -105,6 +113,15 @@ void dir_list(char * use_arg)
 
     while ((entry = readdir(dir)) != NULL)
     {
+        // 拼接文件路径
+        char file_path[PATH_MAX];
+        sprintf(file_path, "%s/%s", use_arg, entry->d_name);
+
+        // 检查文件访问权限
+        if (access(file_path, R_OK) == -1)
+        {
+            continue;// 跳过无权访问的文件
+        }
         list_name[i] = (struct dirent *)malloc(sizeof(struct dirent));
         if (list_name[i] == NULL) 
         {
@@ -123,6 +140,30 @@ void dir_list(char * use_arg)
             list_l(list_name[j], use_arg);
         print_color(list_name[j], use_arg);
     } 
+
+
+    if (flag_R == 1)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            if (flag_a == 0 && list_name[j]->d_name[0] == '.')
+                continue;
+            if (list_name[j]->d_type == DT_DIR && strcmp(list_name[j]->d_name, ".") != 0 && strcmp(list_name[j]->d_name, "..") != 0)
+            {
+
+                char next_path[PATH_MAX];
+                char resolved_path[PATH_MAX];
+                sprintf(next_path, "%s/%s", use_arg, list_name[j]->d_name);
+                char* result = realpath(next_path, resolved_path);
+                printf("\n"BLUE"%s"RESET":\n", resolved_path);
+                if (result == NULL) 
+                {
+                    perror("realpath");
+                }
+                dir_list(next_path);
+            }
+        }
+    }
 
     closedir(dir);
 
