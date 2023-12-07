@@ -1,4 +1,5 @@
 #include "myls.h"
+#include <stdio.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
@@ -113,10 +114,12 @@ void list_l(struct dirent *list_name, const char *dir_path)//-l
     printf("%c",(list_l.st_mode & S_IXOTH) ? 'x' : '-');
     printf(" %3ld",list_l.st_nlink);
 
-    //struct passwd * owner_info = getpwuid(list_l.st_uid);
-    //printf(" %s", owner_info->pw_name);
+    struct passwd * owner_info = getpwuid(list_l.st_uid);
+    printf(" %s", owner_info->pw_name);
     //struct group * group_info = getgrgid(list_l.st_gid);
     //printf(" %s", group_info->gr_name);
+    struct passwd *pwd = getpwuid(list_l.st_uid);
+    printf(" %s", pwd->pw_name);
     printf(" %8ld", list_l.st_size);
 
     struct tm * tm_info = localtime(&list_l.st_mtime);
