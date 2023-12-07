@@ -72,7 +72,7 @@ void list_s(struct dirent *list_name,  const char *dir_path)
         exit(EXIT_FAILURE);
     }
 
-    printf("%4ld ", (long)list_s.st_blocks/2);//为什么不一样
+    printf("%6ld ", (long)list_s.st_blocks/2);//为什么不一样
 }
 
 void list_l(struct dirent *list_name, const char *dir_path)//-l
@@ -134,8 +134,7 @@ void judge_file(char * use_arg)//判断是文件还是目录
             dir_list(use_arg); 
             break;
         default:
-            file_list(use_arg);
-            break;
+            return;
     }
 }
 
@@ -165,11 +164,6 @@ void print_color(struct dirent * list_name, const char *dir_path)
     }
 }
 
-void file_list(char * use_arg)
-{
-    printf("%s", use_arg);
-}
-
 void dir_list(char * use_arg)
 {
     DIR * dir; 
@@ -188,11 +182,20 @@ void dir_list(char * use_arg)
 
     while ((entry = readdir(dir)) != NULL)
     {   
+        // 拼接文件路径
+        char file_path[PATH_MAX];
+        sprintf(file_path, "%s/%s", use_arg, entry->d_name);
+
+        // 检查文件访问权限
+        if (access(file_path, R_OK) == -1)
+        {
+            // 跳过无权访问的文件
+            continue;
+        }
         n++;
     }
 
-    closedir(dir);
-    dir = opendir(use_arg);
+    rewinddir(dir);
 
     if (n == 0)
     {
@@ -209,6 +212,15 @@ void dir_list(char * use_arg)
 
     while ((entry = readdir(dir)) != NULL)
     {
+        // 拼接文件路径
+        char file_path[PATH_MAX];
+        sprintf(file_path, "%s/%s", use_arg, entry->d_name);
+
+        // 检查文件访问权限
+        if (access(file_path, R_OK) == -1)
+        {
+            continue;// 跳过无权访问的文件
+        }
         list_name[i] = (struct dirent *)malloc(sizeof(struct dirent));
         if (list_name[i] == NULL) 
         {
@@ -267,7 +279,7 @@ void dir_list(char * use_arg)
                 printf("\n"BLUE"%s"RESET":\n", list_name[j]->d_name);
                 char next_path[PATH_MAX];
                 sprintf(next_path, "%s/%s", use_arg, list_name[j]->d_name);
-                dir_list(next_path);
+                judge_file(next_path);
             }
         }
     }
