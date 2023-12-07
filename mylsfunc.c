@@ -30,7 +30,6 @@ void list_name_sort(struct dirent ** list_name, int len, const char *dir_path)
             if(lstat(path_i, &stat_i) == -1)
             {
                 perror("stat_i");
-                exit(EXIT_FAILURE);
             }
             time_t mtime_i = stat_i.st_mtime;
 
@@ -40,7 +39,6 @@ void list_name_sort(struct dirent ** list_name, int len, const char *dir_path)
             if(lstat(path_j, &stat_j) == -1)
             {
                 perror("stat_j");
-                exit(EXIT_FAILURE);
             } 
             time_t mtime_j = stat_j.st_mtime;
 
@@ -168,7 +166,13 @@ void print_color(struct dirent * list_name, const char *dir_path)
                 printf(YELLOW"%s"RESET"\n", list_name->d_name);  // 普通文件
             }              
             break;
-        case S_IFDIR: printf(BLUE"%s"RESET"\n",list_name->d_name);    break; 
+        case S_IFDIR: 
+            printf(BLUE"%s"RESET"\n",list_name->d_name);    
+            break; 
+        default: 
+            printf("%s\n",list_name->d_name);
+            break;
+                // exit(EXIT_FAILURE);
     }
 }
 
