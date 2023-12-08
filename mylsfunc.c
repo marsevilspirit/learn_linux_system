@@ -1,28 +1,114 @@
-#include "myls.h"
+#include "myls2.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
-void str_merge(struct dirent **list_name, int low, int mid, int high) {
-    int left_size = mid - low + 1;
-    int right_size = high - mid;
+void str_merge(char **arr, int left, int mid, int right)
+{
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
 
-    struct dirent **left_list = (struct dirent **)malloc(left_size * sizeof(struct dirent *));
-    struct dirent **right_list = (struct dirent **)malloc(right_size * sizeof(struct dirent *));
+    char **left_arr = (char **)malloc(n1 * sizeof(char *));
+    char **right_arr = (char **)malloc(n2 * sizeof(char *));
 
-    // 将原始列表分成左右两个子列表
-    for (int i = 0; i < left_size; i++) {
-        left_list[i] = list_name[low + i];
+    for (int i = 0; i < n1; i++)
+        left_arr[i] = arr[left + i];
+    for (int j = 0; j < n2; j++)
+        right_arr[j] = arr[mid + 1 + j];
+
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2)
+    {
+        if (strcasecmp(left_arr[i], right_arr[j]) <= 0)
+        {
+            arr[k] = left_arr[i];
+            i++;
+        }
+        else
+        {
+            arr[k] = right_arr[j];
+            j++;
+        }
+        k++;
     }
-    for (int j = 0; j < right_size; j++) {
+
+    while (i < n1)
+    {
+        arr[k] = left_arr[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2)
+    {
+        arr[k] = right_arr[j];
+        j++;
+        k++;
+    }
+
+    free(left_arr);
+    free(right_arr);
+}
+
+void str_mergeSort(char **arr, int left, int right)
+{
+    if (left < right)
+    {
+        int mid = left + (right - left) / 2;
+        str_mergeSort(arr, left, mid);
+        str_mergeSort(arr, mid + 1, right);
+        str_merge(arr, left, mid, right);
+    }
+}
+
+void name_strcmp_sort(char **list_name, int len)
+{
+    str_mergeSort(list_name, 0, len - 1);
+}
+
+int compare_mtime(const char *file1, const char *file2, const char *dir_path) {
+    struct stat st1, st2;
+    char path1[255], path2[255];
+
+    snprintf(path1, sizeof(path1), "%s/%s", dir_path, file1);
+    snprintf(path2, sizeof(path2), "%s/%s", dir_path, file2);
+
+    if (stat(path1, &st1) == -1 || stat(path2, &st2) == -1) {
+        perror("stat");
+        return 0;
+    }
+
+    if (st1.st_mtime < st2.st_mtime) {
+        return 1;
+    } else if (st1.st_mtime > st2.st_mtime) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+void merge(char **list_name, int left, int mid, int right, const char *dir_path) {
+    int i, j, k;
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    char **left_list = malloc(n1 * sizeof(char *));
+    char **right_list = malloc(n2 * sizeof(char *));
+
+    for (i = 0; i < n1; i++) {
+        left_list[i] = list_name[left + i];
+    }
+    for (j = 0; j < n2; j++) {
         right_list[j] = list_name[mid + 1 + j];
     }
 
-    int i = 0, j = 0, k = low;
-
-    // 合并左右子列表，按照字符串比较排序
-    while (i < left_size && j < right_size) {
-        if (strcasecmp(left_list[i]->d_name, right_list[j]->d_name) <= 0) {
+    i = 0;
+    j = 0;
+    k = left;
+    while (i < n1 && j < n2) {
+        if (compare_mtime(left_list[i], right_list[j], dir_path) <= 0) {
             list_name[k] = left_list[i];
             i++;
         } else {
@@ -32,13 +118,13 @@ void str_merge(struct dirent **list_name, int low, int mid, int high) {
         k++;
     }
 
-    // 将剩余的元素复制到列表中
-    while (i < left_size) {
+    while (i < n1) {
         list_name[k] = left_list[i];
         i++;
         k++;
     }
-    while (j < right_size) {
+
+    while (j < n2) {
         list_name[k] = right_list[j];
         j++;
         k++;
@@ -48,110 +134,25 @@ void str_merge(struct dirent **list_name, int low, int mid, int high) {
     free(right_list);
 }
 
-void str_merge_sort(struct dirent **list_name, int low, int high) {
-    if (low < high) {
-        int mid = low + (high - low) / 2;
+void merge_sort(char **list_name, int left, int right, const char *dir_path) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
 
-        // 递归地对左右子列表进行归并排序
-        str_merge_sort(list_name, low, mid);
-        str_merge_sort(list_name, mid + 1, high);
+        merge_sort(list_name, left, mid, dir_path);
+        merge_sort(list_name, mid + 1, right, dir_path);
 
-        // 合并左右子列表
-        str_merge(list_name, low, mid, high);
+        merge(list_name, left, mid, right, dir_path);
     }
 }
 
-void name_strcmp_sort(struct dirent **list_name, int len) {
-    str_merge_sort(list_name, 0, len - 1);
+void list_name_sort(char **list_name, int i, const char *dir_path) {
+    merge_sort(list_name, 0, i - 1, dir_path);
 }
 
-void time_merge(struct dirent **list_name, int low, int mid, int high, const char *dir_path) 
-{
-    int left_size = mid - low + 1;
-    int right_size = high - mid;
-
-    struct dirent **left_list = (struct dirent **)malloc(left_size * sizeof(struct dirent *));
-    struct dirent **right_list = (struct dirent **)malloc(right_size * sizeof(struct dirent *));
-
-    // 将原始列表分成左右两个子列表
-    for (int i = 0; i < left_size; i++) 
-    {
-        left_list[i] = list_name[low + i];
-    }
-    for (int j = 0; j < right_size; j++) 
-    {
-        right_list[j] = list_name[mid + 1 + j];
-    }
-
-    int i = 0, j = 0, k = low;
-    struct stat stat_left, stat_right;
-
-    // 合并左右子列表，按照修改时间排序
-    while (i < left_size && j < right_size) 
-    {
-        char path_left[PATH_MAX], path_right[PATH_MAX];
-        sprintf(path_left, "%s/%s", dir_path, left_list[i]->d_name);
-        sprintf(path_right, "%s/%s", dir_path, right_list[j]->d_name);
-
-        if (lstat(path_left, &stat_left) == -1 || lstat(path_right, &stat_right) == -1) 
-        {
-            perror("lstat");
-            exit(EXIT_FAILURE);
-        }
-
-        if (stat_left.st_mtime <= stat_right.st_mtime) 
-        {
-            list_name[k] = left_list[i];
-            i++;
-        } else {
-            list_name[k] = right_list[j];
-            j++;
-        }
-        k++;
-    }
-
-    // 将剩余的元素复制到列表中
-    while (i < left_size) 
-    {
-        list_name[k] = left_list[i];
-        i++;
-        k++;
-    }
-    while (j < right_size) 
-    {
-        list_name[k] = right_list[j];
-        j++;
-        k++;
-    }
-
-    free(left_list);
-    free(right_list);
-}
-
-void time_merge_sort(struct dirent **list_name, int low, int high, const char *dir_path) 
-{
-    if (low < high) {
-        int mid = low + (high - low) / 2;
-
-        // 递归地对左右子列表进行归并排序
-        time_merge_sort(list_name, low, mid, dir_path);
-        time_merge_sort(list_name, mid + 1, high, dir_path);
-
-        // 合并左右子列表
-        time_merge(list_name, low, mid, high, dir_path);
-    }
-}
-
-void list_name_sort(struct dirent **list_name, int len, const char *dir_path) 
-{
-    time_merge_sort(list_name, 0, len - 1, dir_path);
-}
-
-
-void list_i(struct dirent *list_name,  const char *dir_path)
+void list_i(char *list_name,  const char *dir_path)
 {
     char path_i[PATH_MAX];
-    sprintf(path_i, "%s/%s", dir_path, list_name->d_name);
+    sprintf(path_i, "%s/%s", dir_path, list_name);
     struct stat list_i;
     if(lstat(path_i, &list_i) == -1)
     {
@@ -162,10 +163,10 @@ void list_i(struct dirent *list_name,  const char *dir_path)
     printf("%6ld ", (long)list_i.st_ino);
 }
 
-void list_s(struct dirent *list_name,  const char *dir_path)
+void list_s(char *list_name,  const char *dir_path)
 {
     char path_s[PATH_MAX];
-    sprintf(path_s, "%s/%s", dir_path, list_name->d_name);
+    sprintf(path_s, "%s/%s", dir_path, list_name);
     struct stat list_s;
     if(lstat(path_s, &list_s) == -1)
     {
@@ -176,10 +177,10 @@ void list_s(struct dirent *list_name,  const char *dir_path)
     printf("%6ld ", (long)list_s.st_blocks/2);//为什么不一样
 }
 
-void list_l(struct dirent *list_name, const char *dir_path)//-l
+void list_l(char *list_name, const char *dir_path)//-l
 {
     char path_l[PATH_MAX];
-    sprintf(path_l, "%s/%s", dir_path, list_name->d_name);
+    sprintf(path_l, "%s/%s", dir_path, list_name);
     struct stat list_l;
     if(lstat(path_l, &list_l) == -1)
     {
@@ -240,10 +241,10 @@ void judge_file(char * use_arg)//判断是文件还是目录
     }
 }
 
-void print_color(struct dirent * list_name, const char *dir_path)
+void print_color(char * list_name, const char *dir_path)
 {
     char path_color[PATH_MAX];
-    sprintf(path_color, "%s/%s", dir_path, list_name->d_name);
+    sprintf(path_color, "%s/%s", dir_path, list_name);
     struct stat pr_color;
     if(stat(path_color, &pr_color) == -1)
     {
@@ -255,20 +256,20 @@ void print_color(struct dirent * list_name, const char *dir_path)
         case S_IFREG: 
             if (pr_color.st_mode & S_IXUSR) 
             {
-                printf(GREEN "%s" RESET "\n", list_name->d_name);  // 可执行文件
+                printf(GREEN "%s" RESET "\n", list_name);  // 可执行文件
             } 
             else  
             {
-                printf(YELLOW"%s"RESET"\n", list_name->d_name);  // 普通文件
+                printf(YELLOW"%s"RESET"\n", list_name);  // 普通文件
             }              
             break;
         case S_IFDIR: 
-            printf(BLUE"%s"RESET"\n",list_name->d_name);    
+            printf(BLUE"%s"RESET"\n",list_name);    
             break; 
         default: 
-            printf("%s\n",list_name->d_name);
+            printf("%s\n",list_name);
             break;
-                // exit(EXIT_FAILURE);
+            // exit(EXIT_FAILURE);
     }
 }
 
@@ -276,8 +277,7 @@ void dir_list(char * use_arg)
 {
     DIR * dir; 
     struct dirent * entry;
-    struct dirent ** list_name;//用于储存文件名,方便排序
-    struct stat file_stat;
+    char ** list_name;//用于储存文件名,方便排序
     int n = 0, i = 0;//n记录文件数目,i为储存文件下标
 
     dir = opendir(use_arg);
@@ -311,7 +311,7 @@ void dir_list(char * use_arg)
         return;
     }
 
-    list_name = (struct dirent **)malloc(n*sizeof(struct dirent *));
+    list_name = (char **)malloc(n*sizeof(char *));
     if(list_name == NULL)
     {
         perror("malloc");
@@ -330,13 +330,13 @@ void dir_list(char * use_arg)
             printf("%s没有权限，无法打开\n", file_path);
             continue;// 跳过无权访问的文件
         }
-        list_name[i] = (struct dirent *)malloc(sizeof(struct dirent));
+        list_name[i] = (char *)malloc(sizeof(char)*256);
         if (list_name[i] == NULL) 
         {
             perror("malloc");
             exit(EXIT_FAILURE);
         }
-        memcpy(list_name[i], entry, sizeof(struct dirent));
+        strcpy(list_name[i], entry->d_name);
         //        printf("%d:%s\n", i, entry->d_name);
         i++;
     }
@@ -350,7 +350,7 @@ void dir_list(char * use_arg)
     {
         for(int j = n-1; j >= 0; j--)
         {
-            if(flag_a == 0 && list_name[j]->d_name[0] == '.')
+            if(flag_a == 0 && list_name[j][0] == '.')
                 continue;
             if (flag_i == 1)
                 list_i(list_name[j], use_arg);   
@@ -365,7 +365,7 @@ void dir_list(char * use_arg)
     {
         for(int j = 0; j < n; j++)
         {
-            if(flag_a == 0 && list_name[j]->d_name[0] == '.')
+            if(flag_a == 0 && list_name[j][0] == '.')
                 continue;
             if (flag_i == 1)
                 list_i(list_name[j], use_arg);   
@@ -377,18 +377,20 @@ void dir_list(char * use_arg)
         } 
     }
 
+    rewinddir(dir);
+
     if (flag_R == 1)
     {
-        for (int j = 0; j < n; j++)
+        while ((entry = readdir(dir)) != NULL)
         {
-            if (flag_a == 0 && list_name[j]->d_name[0] == '.')
-                continue;
-            if (list_name[j]->d_type == DT_DIR && strcmp(list_name[j]->d_name, ".") != 0 && strcmp(list_name[j]->d_name, "..") != 0)
+            if (flag_a == 0 && entry->d_name[0] == '.')
+                continue;    
+            if (entry->d_type == DT_DIR && strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
             {
-                
+
                 char next_path[PATH_MAX];
                 char resolved_path[PATH_MAX];
-                sprintf(next_path, "%s/%s", use_arg, list_name[j]->d_name);
+                sprintf(next_path, "%s/%s", use_arg, entry->d_name);
                 char* result = realpath(next_path, resolved_path);
                 printf("\n"BLUE"%s"RESET":\n", resolved_path);
                 if (result == NULL) 
@@ -400,6 +402,7 @@ void dir_list(char * use_arg)
         }
     }
 
+
     closedir(dir);
 
     for(int j = 0; j < i; j++)
@@ -408,7 +411,6 @@ void dir_list(char * use_arg)
     }
     free(list_name);
 }
-
 
 
 
