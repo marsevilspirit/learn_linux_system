@@ -1,4 +1,7 @@
-#include "myls.h"
+#include "myls2.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
@@ -234,14 +237,8 @@ void judge_file(char * use_arg)//判断是文件还是目录
             dir_list(use_arg); 
             break;
         default:
-            file_list(use_arg);
             return;
     }
-}
-
-void file_list(char * use_arg)
-{
-    printf(BLUE"%s"RESET"\n",use_arg);
 }
 
 void print_color(char * list_name, const char *dir_path)
@@ -286,7 +283,7 @@ void dir_list(char * use_arg)
     dir = opendir(use_arg);
     if(dir == NULL) 
     {
-        perror("目录打开失败");
+        perror("opendir");
         return;
     }
     // 拼接文件路径
@@ -414,6 +411,7 @@ void dir_list(char * use_arg)
     }
     free(list_name);
 }
+
 
 
 
