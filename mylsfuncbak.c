@@ -1,4 +1,5 @@
 #include "myls.h"
+#include <stdlib.h>
 
 extern int flag_a, flag_l, flag_R, flag_t, flag_r, flag_i, flag_s;
 
@@ -18,38 +19,86 @@ void name_strcmp_sort(struct dirent **list_name, int len)
     }
 }
 
-void list_name_sort(struct dirent ** list_name, int len, const char *dir_path)
+void merge(struct dirent **list_name, int low, int mid, int high, const char *dir_path) 
 {
-    for (int i = 0; i < len; i++)
+    int left_size = mid - low + 1;
+    int right_size = high - mid;
+
+    struct dirent **left_list = (struct dirent **)malloc(left_size * sizeof(struct dirent *));
+    struct dirent **right_list = (struct dirent **)malloc(right_size * sizeof(struct dirent *));
+
+    // 将原始列表分成左右两个子列表
+    for (int i = 0; i < left_size; i++) 
     {
-        for (int j = i + 1; j < len; j++) 
-        {
-            char path_i[PATH_MAX];
-            sprintf(path_i, "%s/%s", dir_path, list_name[i]->d_name);
-            struct stat stat_i;
-            if(lstat(path_i, &stat_i) == -1)
-            {
-                perror("stat_i");
-            }
-            time_t mtime_i = stat_i.st_mtime;
-
-            char path_j[PATH_MAX];
-            sprintf(path_j, "%s/%s", dir_path, list_name[j]->d_name);
-            struct stat stat_j;
-            if(lstat(path_j, &stat_j) == -1)
-            {
-                perror("stat_j");
-            } 
-            time_t mtime_j = stat_j.st_mtime;
-
-            if (mtime_i < mtime_j)
-            {
-                struct dirent *tmp = list_name[j];
-                list_name[j] = list_name[i];
-                list_name[i] = tmp;
-            }
-        }
+        left_list[i] = list_name[low + i];
     }
+    for (int j = 0; j < right_size; j++) 
+    {
+        right_list[j] = list_name[mid + 1 + j];
+    }
+
+    int i = 0, j = 0, k = low;
+    struct stat stat_left, stat_right;
+
+    // 合并左右子列表，按照修改时间排序
+    while (i < left_size && j < right_size) 
+    {
+        char path_left[PATH_MAX], path_right[PATH_MAX];
+        sprintf(path_left, "%s/%s", dir_path, left_list[i]->d_name);
+        sprintf(path_right, "%s/%s", dir_path, right_list[j]->d_name);
+
+        if (lstat(path_left, &stat_left) == -1 || lstat(path_right, &stat_right) == -1) 
+        {
+            perror("lstat");
+            exit(EXIT_FAILURE);
+        }
+
+        if (stat_left.st_mtime <= stat_right.st_mtime) 
+        {
+            list_name[k] = left_list[i];
+            i++;
+        } else {
+            list_name[k] = right_list[j];
+            j++;
+        }
+        k++;
+    }
+
+    // 将剩余的元素复制到列表中
+    while (i < left_size) 
+    {
+        list_name[k] = left_list[i];
+        i++;
+        k++;
+    }
+    while (j < right_size) 
+    {
+        list_name[k] = right_list[j];
+        j++;
+        k++;
+    }
+
+    free(left_list);
+    free(right_list);
+}
+
+void merge_sort(struct dirent **list_name, int low, int high, const char *dir_path) 
+{
+    if (low < high) {
+        int mid = low + (high - low) / 2;
+
+        // 递归地对左右子列表进行归并排序
+        merge_sort(list_name, low, mid, dir_path);
+        merge_sort(list_name, mid + 1, high, dir_path);
+
+        // 合并左右子列表
+        merge(list_name, low, mid, high, dir_path);
+    }
+}
+
+void list_name_sort(struct dirent **list_name, int len, const char *dir_path) 
+{
+    merge_sort(list_name, 0, len - 1, dir_path);
 }
 
 
