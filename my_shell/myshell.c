@@ -1,10 +1,13 @@
 #include "myshell.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
     while (TRUE) 
     {
+        char *command = (char *)malloc(MAX_COMMAND_LENGTH*sizeof(char));
+
         print_name();
         get_command(); 
+        break; 
     }
 }
