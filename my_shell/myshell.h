@@ -8,9 +8,12 @@
 
 #define RESET       "\x1B[0m"
 #define RED         "\x1B[31m"
-#define GREEN       "\x1B[32m"
 #define YELLOW      "\x1B[33m"
 #define BLUE        "\x1B[34m"
+#define WHITE       "\x1B[37m"
+
+#define BRESET       "\033[0m"
+#define BOLD        "\033[1m"
 
 void print_name();
 

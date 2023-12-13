@@ -12,7 +12,7 @@ void print_name()
         last_dir++; // 移动到下一个字符
     }
     gethostname(hostname, sizeof(hostname));
-    printf(YELLOW"%s"RESET"@%s %s", getlogin(), hostname, last_dir);
+    printf(BOLD YELLOW"%s"WHITE"@"RED"%s"" "BLUE"%s/", getlogin(), hostname, last_dir);
 
 }
 
