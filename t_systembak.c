@@ -11,13 +11,13 @@ int main(void)
 
     for(;;)
     {
-        printf("mar:$ ");
+        printf("mars:$ ");
         fflush(stdout);
         if(fgets(str, MAX_CMD_LEN, stdin) == NULL)
             break;
 
         status = system(str);
-        printf("systen() returned: status=0x%04x (%d,%d)\n", (unsigned int)status, status >> 8, status & 0xff);
+        printf("system() returned: status=0x%04x (%d,%d)\n", (unsigned int)status, status >> 8, status & 0xff);
 
         if(status == -1)
         {
