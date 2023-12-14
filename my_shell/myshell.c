@@ -7,7 +7,9 @@ int main(void)
         char *command = (char *)malloc(MAX_COMMAND_LENGTH*sizeof(char));
 
         print_name();
-        get_command(); 
+        get_command(command); 
+        deal_command(command);
+        free(command);
         break; 
     }
 }
