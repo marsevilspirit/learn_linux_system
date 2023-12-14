@@ -10,6 +10,5 @@ int main(void)
         get_command(command); 
         deal_command(command);
         free(command);
-        break; 
     }
 }
