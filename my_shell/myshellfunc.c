@@ -45,7 +45,7 @@ void deal_command(char * command)
         
         execvp(args[0], args);
         printf("无法执行命令：%s\n", args[0]);
-        exit(1);
+        exit(EXIT_FAILURE);
     } 
     else if (pid > 0) 
     {
