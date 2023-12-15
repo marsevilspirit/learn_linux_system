@@ -3,10 +3,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 #define TRUE 1
 #define MAX_COMMAND_LENGTH 100
 #define NAME_LENGTH 256
+#define MYSH_TOKEN " \t\r\n"
 #define LINES "-----------------------------------------------------------------------------------------------------------------------------------------"
 
 #define RESET       "\x1B[0m"

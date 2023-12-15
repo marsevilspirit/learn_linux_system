@@ -44,11 +44,11 @@ void deal_command(char * command)
 {
     char *args[MAX_COMMAND_LENGTH];
     int i = 0;
-    char *token = strtok(command, " ");
+    char *token = strtok(command, MYSH_TOKEN);
     while (token != NULL) 
     {
         args[i++] = token;
-        token = strtok(NULL, " ");
+        token = strtok(NULL, MYSH_TOKEN);
     }
     args[i] = NULL;
 
@@ -148,5 +148,5 @@ void my_cd(char ** args)
         }
     }
 
-        setenv("OLDPWD", current_dir, 1); // 更新上一个工作目录
+    setenv("OLDPWD", current_dir, 1); // 更新上一个工作目录
 }
