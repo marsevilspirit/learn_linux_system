@@ -69,6 +69,23 @@ void deal_command(char * command)
 
 void my_cd(char ** args)
 {
+    if(args[1] == NULL)
+    {
+        char *home_dir = getenv("HOME");
+        if (home_dir != NULL)
+        {
+            if (chdir(home_dir) == -1)
+            {
+                printf("cd: 无法进入目录 '%s'\n", home_dir);
+            }
+        }
+        else
+        {
+            printf("cd: 无法找到家目录\n");
+        } 
+    }
+
+
     if (args[1] != NULL)
     {
         if (strcmp(args[1], "-") == 0)
@@ -94,20 +111,6 @@ void my_cd(char ** args)
             }
         }
     }
-    else
-    {
-        char *home_dir = getenv("HOME");
-        if (home_dir != NULL)
-        {
-            if (chdir(home_dir) == -1)
-            {
-                printf("cd: 无法进入目录 '%s'\n", home_dir);
-            }
-        }
-        else
-        {
-            printf("cd: 无法找到家目录\n");
-        }            
-    }
+
     return;
 }
