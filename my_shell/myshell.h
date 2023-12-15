@@ -7,6 +7,7 @@
 #define TRUE 1
 #define MAX_COMMAND_LENGTH 100
 #define NAME_LENGTH 256
+#define LINES "-----------------------------------------------------------------------------------------------------------------------------------------"
 
 #define RESET       "\x1B[0m"
 #define RED         "\x1B[31m"
@@ -14,6 +15,8 @@
 #define BLUE        "\x1B[34m"
 #define WHITE       "\x1B[37m"
 #define BOLD        "\033[1m"
+
+void print_myshell();
 
 void print_name();
 

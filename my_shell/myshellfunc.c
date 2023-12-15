@@ -1,6 +1,17 @@
 #include "myshell.h"
 #include <stdio.h>
 
+void print_myshell()
+{
+    printf("%s\n", LINES);
+    printf(" __    __     __  __        ______     __  __     ______   ______     ______        ______     __  __     ______     __         __        \n");
+    printf("/\\ \"-./  \\   /\\ \\_\\ \\      /\\  ___\\   /\\ \\/\\ \\   /\\  == \\ /\\  ___\\   /\\  == \\      /\\  ___\\   /\\ \\_\\ \\   /\\  ___\\   /\\ \\       /\\ \\       \n");
+    printf("\\ \\ \\-./\\ \\  \\ \\____ \\     \\ \\___  \\  \\ \\ \\_\\ \\  \\ \\  _-/ \\ \\  __\\   \\ \\  __<      \\ \\___  \\  \\ \\  __ \\  \\ \\  __\\   \\ \\ \\____  \\ \\ \\____  \n");
+    printf(" \\ \\_\\ \\ \\_\\  \\/\\_____\\     \\/\\_____\\  \\ \\_____\\  \\ \\_\\    \\ \\_____\\  \\ \\_\\ \\_\\     \\/\\_____\\  \\ \\_\\ \\_\\  \\ \\_____\\  \\ \\_____\\  \\ \\_____\\ \n");
+    printf("  \\/_/  \\/_/   \\/_____/      \\/_____/   \\/_____/   \\/_/     \\/_____/   \\/_/ /_/      \\/_____/   \\/_/\\/_/   \\/_____/   \\/_____/   \\/_____/ \n");
+    printf("%s\n", LINES);
+}
+
 void print_name()
 {
     char hostname[NAME_LENGTH];
@@ -69,6 +80,24 @@ void deal_command(char * command)
 
 void my_cd(char ** args)
 {
+    int i = 0;
+    while (args[i] != NULL)
+    {
+        if (i > 1)
+        {
+            printf("cd: 参数太多了!\n");
+            return;
+        }
+        i++;
+    }
+
+    char current_dir[NAME_LENGTH];
+    if (getcwd(current_dir, sizeof(current_dir)) == NULL)
+    {
+        printf("cd: 无法获取当前目录\n");
+        return;
+    }
+
     if(args[1] == NULL)
     {
         char *home_dir = getenv("HOME");
@@ -77,40 +106,47 @@ void my_cd(char ** args)
             if (chdir(home_dir) == -1)
             {
                 printf("cd: 无法进入目录 '%s'\n", home_dir);
+                return;
             }
         }
         else
         {
             printf("cd: 无法找到家目录\n");
+            return;
         } 
+
+        setenv("OLDPWD", current_dir, 1);
+        return;
     }
 
-
-    if (args[1] != NULL)
+    if (strcmp(args[1], "-") == 0)
     {
-        if (strcmp(args[1], "-") == 0)
+        char *previous_dir = getenv("OLDPWD");
+        if (previous_dir != NULL)
         {
-            char *previous_dir = getenv("OLDPWD");
-            if (previous_dir != NULL)
+
+
+            if (chdir(previous_dir) == -1)
             {
-                if (chdir(previous_dir) == -1)
-                {
-                    printf("cd: 无法进入目录 '%s'\n", previous_dir);
-                }
+                printf("cd: 无法进入目录 '%s'\n", previous_dir);
+                return;
             }
-            else
-            {
-                printf("cd: 无法找到上一个工作目录\n");
-            }
+
         }
         else
         {
-            if (chdir(args[1]) == -1)
-            {
-                printf("cd: 无法进入目录 '%s'\n", args[1]);
-            }
+            printf("cd: 无法找到上一个工作目录\n");
+            return;
+        }
+    }
+    else
+    {
+        if (chdir(args[1]) == -1)
+        {
+            printf("cd: 无法进入目录 '%s'\n", args[1]);
+            return;
         }
     }
 
-    return;
+        setenv("OLDPWD", current_dir, 1); // 更新上一个工作目录
 }

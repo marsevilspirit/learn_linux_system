@@ -2,6 +2,7 @@
 
 int main(void)
 {
+    print_myshell();
     while (TRUE) 
     {
         char *command = (char *)malloc(MAX_COMMAND_LENGTH*sizeof(char));
@@ -9,7 +10,8 @@ int main(void)
         get_command(command); 
         if(strcmp(command, "exit") == 0)
         {
-            exit(EXIT_FAILURE);
+            free(command);
+            exit(EXIT_SUCCESS);
         }
         deal_command(command);
         free(command);
