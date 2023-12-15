@@ -20,3 +20,5 @@ void print_name();
 void get_command(char * command);
 
 void deal_command(char * command);
+
+void my_cd(char ** args);
