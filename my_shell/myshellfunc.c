@@ -1,4 +1,6 @@
 #include "myshell.h"
+#include <stdio.h>
+#include <string.h>
 
 void print_myshell()
 {
@@ -53,6 +55,14 @@ void deal_command(char * command)
         my_cd(args);
         return;
     }
+
+    int num_pipe = 0;
+    for(int j = 0; args[j] != NULL; j++)
+    {
+        if(strcmp(args[j], "|") == 0) 
+            num_pipe++;
+    }
+    printf("\nnum_pipe = %d\n", num_pipe);
 
     pid_t pid = fork();
     if (pid == 0) 
