@@ -1,6 +1,7 @@
 #include "myshell.h"
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 void print_myshell()
 {
@@ -42,13 +43,21 @@ void get_command(char * command)
 
 void deal_command(char * command)
 {
+    char dir[15];
+    sprintf(dir, "/home/%s",getlogin());
+
     char *args[MAX_COMMAND_LENGTH];
     int i = 0;
     char *token = strtok(command, MYSH_TOKEN);
     while (token != NULL) 
     {
-        args[i++] = token;
+        args[i] = token;
         token = strtok(NULL, MYSH_TOKEN);
+        if(strcmp(args[i], "~") == 0)
+        {
+            args[i] = dir;
+        }
+        i++;
     }
     args[i] = NULL;
 
@@ -99,7 +108,7 @@ void deal_command(char * command)
 
 void my_pipe(char **args, int num)
 {
-    
+
 }
 
 void my_cd(char ** args)
