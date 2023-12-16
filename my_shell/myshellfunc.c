@@ -1,5 +1,4 @@
 #include "myshell.h"
-#include <stdio.h>
 
 void print_myshell()
 {
@@ -26,10 +25,7 @@ void print_name()
 
     gethostname(hostname, sizeof(hostname));
 
-    if(strcmp(getlogin(), last_dir) != 0)
-        printf(BOLD YELLOW"%s"WHITE"@"RED"%s"" "BLUE"%s/", getlogin(), hostname, last_dir);
-    else
-        printf(BOLD YELLOW"%s"WHITE"@"RED"%s"" "BLUE"~", getlogin(), hostname);
+    printf(BOLD YELLOW"%s"WHITE"@"RED"%s"" "BLUE"%s/", getlogin(), hostname, (strcmp(getlogin(), last_dir)?last_dir:"~"));
 
     printf(RESET" $ ");
 }
