@@ -6,6 +6,8 @@ int main(void)
 
     char *command = (char *)malloc(MAX_COMMAND_LENGTH*sizeof(char));
 
+    signal(SIGINT, SIG_IGN);
+
     while (TRUE) 
     {
         print_name();
@@ -16,7 +18,7 @@ int main(void)
         }
         deal_command(command);
     }
-            
+
     free(command);
 
     return 0;

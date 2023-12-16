@@ -30,6 +30,8 @@ void print_name()
     printf(BOLD YELLOW"%s"WHITE"@"RED"%s"" "BLUE"%s/", getlogin(), hostname, (strcmp(getlogin(), last_dir)?last_dir:"~"));
 
     printf(RESET" $ ");
+
+    fflush(stdout);
 }
 
 void get_command(char * command)
@@ -50,6 +52,11 @@ void deal_command(char * command)
     }
     args[i] = NULL;
 
+    if(args[0] == NULL)
+    {
+        return;
+    }
+
     if(strcmp(args[0], "cd") == 0)
     {
         my_cd(args);
@@ -62,26 +69,37 @@ void deal_command(char * command)
         if(strcmp(args[j], "|") == 0) 
             num_pipe++;
     }
-    printf("\nnum_pipe = %d\n", num_pipe);
 
-    pid_t pid = fork();
-    if (pid == 0) 
+    if(num_pipe == 0)
     {
-        // 子进程
-        execvp(args[0], args);
+        pid_t pid = fork();
+        if (pid == 0) 
+        {
+            // 子进程
+            execvp(args[0], args);
 
-        printf("无效命令：%s\n", args[0]);
-        exit(EXIT_FAILURE);
-    } 
-    else if (pid > 0) 
-    {
-        // 父进程
-        wait(NULL);  // 等待子进程结束
-    } 
-    else 
-    {
-        printf("无法创建子进程\n");
+            printf("无效命令：%s\n", args[0]);
+            exit(EXIT_FAILURE);
+        } 
+        else if (pid > 0) 
+        {
+            // 父进程
+            wait(NULL);  // 等待子进程结束
+        } 
+        else 
+        {
+            printf("无法创建子进程\n");
+        }
     }
+    else
+    {
+        my_pipe(args, num_pipe);
+    }
+}
+
+void my_pipe(char **args, int num)
+{
+    
 }
 
 void my_cd(char ** args)

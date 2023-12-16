@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
-#include <errno.h>
+#include <signal.h>
 
 #define TRUE 1
 #define MAX_COMMAND_LENGTH 100
@@ -25,5 +25,7 @@ void print_name();
 void get_command(char * command);
 
 void deal_command(char * command);
+
+void my_pipe(char **args, int num);
 
 void my_cd(char ** args);
