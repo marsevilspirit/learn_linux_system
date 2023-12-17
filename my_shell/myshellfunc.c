@@ -147,7 +147,6 @@ void my_cd(char ** args)
             printf("cd: 无法找到家目录\n");
             return;
         } 
-
         setenv("OLDPWD", current_dir, 1);
         return;
     }
@@ -162,7 +161,6 @@ void my_cd(char ** args)
                 printf("cd: 无法进入目录 '%s'\n", previous_dir);
                 return;
             }
-
         }
         else
         {
