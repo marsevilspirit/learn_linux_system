@@ -157,8 +157,6 @@ void my_cd(char ** args)
         char *previous_dir = getenv("OLDPWD");
         if (previous_dir != NULL)
         {
-
-
             if (chdir(previous_dir) == -1)
             {
                 printf("cd: 无法进入目录 '%s'\n", previous_dir);
