@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <termios.h>
 
 #define TRUE 1
 #define MAX_COMMAND_LENGTH 100
