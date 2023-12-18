@@ -94,7 +94,6 @@ void execute(char **args, int cnt)
     if (pid == 0)
     {
         deal_pipe(0, cnt, args);
-        return;
     }
     else if (pid > 0)
     {
@@ -118,13 +117,13 @@ void deal_pipe(int left, int right, char **args)
     if (flag_pipe == -1) 
     {
         deal_others(left, right, args);
-        return;
+        exit(EXIT_SUCCESS);
     }
 
     if (flag_pipe + 1 == right)
     {
         printf("|后面缺少参数\n");
-        return;
+        exit(EXIT_FAILURE);
     }
 
     int fd[2];
@@ -159,14 +158,13 @@ void deal_pipe(int left, int right, char **args)
 void deal_others(int left, int right, char **args)
 {
     int fd;
-    int is_background = 0;
-
+    int flag_background = 0;
 
     for (int i = left; i < right; i++)
     {
         if (strcmp(args[i], "&") == 0)
         {
-            is_background = 1;
+            flag_background = 1;
             args[i] = NULL;
             break;
         }
@@ -174,22 +172,12 @@ void deal_others(int left, int right, char **args)
 
     for (int i = left; i < right; i++)
     {
-        if (strcmp(args[i], "<") == 0)
-        {
-            fd = open(args[i + 1], O_RDONLY);
-            dup2(fd, STDIN_FILENO);
-            close(fd);
-            args[i] = NULL;
-            // args[i+1]=NULL;//处理<的同时处理文件
-            i++;
-        }
         if (strcmp(args[i], ">") == 0)
         {
             fd = open(args[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
             dup2(fd, STDOUT_FILENO);
             close(fd);
             args[i] = NULL;
-            // args[i+1]=NULL;
             i++;
         }
         if (strcmp(args[i], ">>") == 0)
@@ -198,7 +186,14 @@ void deal_others(int left, int right, char **args)
             dup2(fd, STDOUT_FILENO);
             close(fd);
             args[i] = NULL;
-            // args[i+1]=NULL;
+            i++;
+        }        
+        if (strcmp(args[i], "<") == 0)
+        {
+            fd = open(args[i + 1], O_RDONLY);
+            dup2(fd, STDIN_FILENO);
+            close(fd);
+            args[i] = NULL;
             i++;
         }
     }
@@ -206,27 +201,26 @@ void deal_others(int left, int right, char **args)
     pid_t pid = fork();
     if (pid == -1)
     {
-        printf("无法创建子进程");
+        perror("fork");
+        exit(EXIT_FAILURE);
     }
 
     if (pid == 0)
     {
-        // execvp(args[left], args + left);//bug
         char *command[MAX_COMMAND_LENGTH];
         for (int i = left; i < right; i++)
         {
-            // strcpy(command[i], args[i]);//bug
             command[i] = args[i];
         }
-        command[right] = NULL; // bug有效参数的个数j
+        command[right] = NULL; 
         execvp(command[left], command + left);
 
-        printf("无效命令：%s\n", args[0]);
+        printf("无效命令\n");
         exit(EXIT_FAILURE);
     }
     else if (pid > 0)
     {
-        if (is_background == 0)
+        if (flag_background == 0)
         {
             waitpid(pid, NULL, 0);
         }
@@ -299,5 +293,5 @@ void my_cd(char ** args)
         }
     }
 
-    setenv("OLDPWD", current_dir, 1); // 更新上一个工作目录
+    setenv("OLDPWD", current_dir, 1); 
 }
