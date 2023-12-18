@@ -92,7 +92,6 @@ void execute(char **args, int cnt)
     if (pid == 0)
     {
         deal_pipe(0, cnt, args);
-        return;
     }
     else if (pid > 0)
     {
@@ -116,13 +115,13 @@ void deal_pipe(int left, int right, char **args)
     if (flag_pipe == -1) 
     {
         deal_others(left, right, args);
-        return;
+        exit(EXIT_SUCCESS);
     }
 
     if (flag_pipe + 1 == right)
     {
         printf("|后面缺少参数\n");
-        return;
+        exit(EXIT_FAILURE);
     }
 
     int fd[2];
@@ -157,18 +156,13 @@ void deal_pipe(int left, int right, char **args)
 void deal_others(int left, int right, char **args)
 {
     int fd;
-    int is_background = 0;
-
-    if (!find(args[left]))
-    {
-        return;
-    }
+    int flag_background = 0;
 
     for (int i = left; i < right; i++)
     {
         if (strcmp(args[i], "&") == 0)
         {
-            is_background = 1;
+            flag_background = 1;
             args[i] = NULL;
             break;
         }
@@ -176,14 +170,7 @@ void deal_others(int left, int right, char **args)
 
     for (int i = left; i < right; i++)
     {
-        if (strcmp(args[i], "<") == 0)
-        {
-            fd = open(args[i + 1], O_RDONLY);
-            dup2(fd, STDIN_FILENO);
-            close(fd);
-            args[i] = NULL;
-            i++;
-        }
+
         if (strcmp(args[i], ">") == 0)
         {
             fd = open(args[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -199,13 +186,22 @@ void deal_others(int left, int right, char **args)
             close(fd);
             args[i] = NULL;
             i++;
+        }        
+        if (strcmp(args[i], "<") == 0)
+        {
+            fd = open(args[i + 1], O_RDONLY);
+            dup2(fd, STDIN_FILENO);
+            close(fd);
+            args[i] = NULL;
+            i++;
         }
     }
 
     pid_t pid = fork();
     if (pid == -1)
     {
-        printf("无法创建子进程");
+        perror("fork");
+        exit(EXIT_FAILURE);
     }
 
     if (pid == 0)
@@ -217,42 +213,17 @@ void deal_others(int left, int right, char **args)
         }
         command[right] = NULL; 
         execvp(command[left], command + left);
+
+        printf("无效命令\n");
+        exit(EXIT_FAILURE);
     }
     else if (pid > 0)
     {
-        if (is_background == 0)
+        if (flag_background == 0)
         {
             waitpid(pid, NULL, 0);
         }
     }
-}
-
-int find(char *command)
-{
-    DIR *dir;
-    struct dirent *sdp;
-    char *path[] = {"/bin", "/usr/bin", "./", NULL};
-
-    if (strncmp(command, "./", 2) == 0) 
-    {
-        command = command + 2; 
-    }
-
-    for (int i = 0; path[i] != NULL; i++)
-    {
-        dir = opendir(path[i]);
-        while ((sdp = readdir(dir)) != NULL)
-        {
-            if (strcmp(command, sdp->d_name) == 0)
-            {
-                closedir(dir);
-                return 1;
-            }
-        }
-    }
-
-    closedir(dir);
-    return 0;
 }
 
 void my_cd(char ** args)

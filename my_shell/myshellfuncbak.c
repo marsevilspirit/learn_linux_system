@@ -1,6 +1,4 @@
 #include "myshell.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 void disable_EOF() 
 {
