@@ -172,6 +172,7 @@ void deal_others(int left, int right, char **args)
 
     for (int i = left; i < right; i++)
     {
+
         if (strcmp(args[i], ">") == 0)
         {
             fd = open(args[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);

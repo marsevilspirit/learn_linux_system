@@ -40,6 +40,4 @@ void deal_pipe(int left, int right, char **args);
 
 void deal_others(int left, int right, char **args);
 
-int find(char *command);
-
 void my_cd(char ** args);
