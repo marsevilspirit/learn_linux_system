@@ -3,6 +3,14 @@
 #include <string.h>
 #include <unistd.h>
 
+void disable_EOF() 
+{
+    struct termios term;
+    tcgetattr(STDIN_FILENO, &term);
+    term.c_cc[VEOF] = _POSIX_VDISABLE;
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+}
+
 void print_myshell()
 {
     printf("%s\n", LINES);

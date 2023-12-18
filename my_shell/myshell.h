@@ -19,6 +19,8 @@
 #define WHITE       "\x1B[37m"
 #define BOLD        "\033[1m"
 
+void disable_EOF();
+
 void print_myshell();
 
 void print_name();
