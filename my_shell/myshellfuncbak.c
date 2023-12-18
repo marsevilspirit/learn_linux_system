@@ -1,4 +1,6 @@
 #include "myshell.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 void disable_EOF() 
 {
@@ -52,19 +54,19 @@ void deal_command(char * command)
     sprintf(dir, "/home/%s",getlogin());
 
     char *args[MAX_COMMAND_LENGTH];
-    int i = 0;
+    int cnt = 0;
     char *token = strtok(command, MYSH_TOKEN);
     while (token != NULL) 
     {
-        args[i] = token;
+        args[cnt] = token;
         token = strtok(NULL, MYSH_TOKEN);
-        if(strcmp(args[i], "~") == 0)
+        if(strcmp(args[cnt], "~") == 0)
         {
-            args[i] = dir;
+            args[cnt] = dir;
         }
-        i++;
+        cnt++;
     }
-    args[i] = NULL;
+    args[cnt] = NULL;
 
     if(args[0] == NULL)
     {
@@ -77,43 +79,158 @@ void deal_command(char * command)
         return;
     }
 
-    int num_pipe = 0;
-    for(int j = 0; args[j] != NULL; j++)
+    execute(args, cnt);
+}
+
+void execute(char **args, int cnt)
+{
+    pid_t pid;
+    pid = fork();
+    if (pid == -1)
     {
-        if(strcmp(args[j], "|") == 0) 
-            num_pipe++;
+        printf("无法创建子进程");
     }
 
-    if(num_pipe == 0)
+    if (pid == 0)
     {
-        pid_t pid = fork();
-        if (pid == 0) 
-        {
-            // 子进程
-            execvp(args[0], args);
-
-            printf("无效命令：%s\n", args[0]);
-            exit(EXIT_FAILURE);
-        } 
-        else if (pid > 0) 
-        {
-            // 父进程
-            wait(NULL);  // 等待子进程结束
-        } 
-        else 
-        {
-            printf("无法创建子进程\n");
-        }
+        deal_pipe(0, cnt, args);
+        return;
     }
-    else
+    else if (pid > 0)
     {
-        my_pipe(args, num_pipe);
+        waitpid(pid, NULL, 0);
     }
 }
 
-void my_pipe(char **args, int num)
+void deal_pipe(int left, int right, char **args)
 {
+    int flag_pipe = -1;
 
+    for (int i = left; i < right; i++)
+    {
+        if (strcmp(args[i], "|") == 0) 
+        {
+            flag_pipe = i;
+            break;
+        }
+    }
+
+    if (flag_pipe == -1) 
+    {
+        deal_others(left, right, args);
+        return;
+    }
+
+    if (flag_pipe + 1 == right)
+    {
+        printf("|后面缺少参数\n");
+        return;
+    }
+
+    int fd[2];
+    if (pipe(fd) == -1)
+    {
+        perror("pipe");    
+        exit(EXIT_FAILURE);
+    }
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        printf("无法创键子进程");
+    }
+
+    if (pid == 0)
+    {
+        close(fd[0]);
+        dup2(fd[1], STDOUT_FILENO);
+        deal_others(left, flag_pipe, args);
+        exit(0);
+    }
+    else if (pid > 0)
+    {
+        waitpid(pid, NULL, 0);
+
+        close(fd[1]);
+        dup2(fd[0], STDIN_FILENO);
+        deal_pipe(flag_pipe + 1, right, args);
+    }
+}
+
+void deal_others(int left, int right, char **args)
+{
+    int fd;
+    int is_background = 0;
+
+
+    for (int i = left; i < right; i++)
+    {
+        if (strcmp(args[i], "&") == 0)
+        {
+            is_background = 1;
+            args[i] = NULL;
+            break;
+        }
+    }
+
+    for (int i = left; i < right; i++)
+    {
+        if (strcmp(args[i], "<") == 0)
+        {
+            fd = open(args[i + 1], O_RDONLY);
+            dup2(fd, STDIN_FILENO);
+            close(fd);
+            args[i] = NULL;
+            // args[i+1]=NULL;//处理<的同时处理文件
+            i++;
+        }
+        if (strcmp(args[i], ">") == 0)
+        {
+            fd = open(args[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            dup2(fd, STDOUT_FILENO);
+            close(fd);
+            args[i] = NULL;
+            // args[i+1]=NULL;
+            i++;
+        }
+        if (strcmp(args[i], ">>") == 0)
+        {
+            fd = open(args[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+            dup2(fd, STDOUT_FILENO);
+            close(fd);
+            args[i] = NULL;
+            // args[i+1]=NULL;
+            i++;
+        }
+    }
+
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        printf("无法创建子进程");
+    }
+
+    if (pid == 0)
+    {
+        // execvp(args[left], args + left);//bug
+        char *command[MAX_COMMAND_LENGTH];
+        for (int i = left; i < right; i++)
+        {
+            // strcpy(command[i], args[i]);//bug
+            command[i] = args[i];
+        }
+        command[right] = NULL; // bug有效参数的个数j
+        execvp(command[left], command + left);
+
+        printf("无效命令：%s\n", args[0]);
+        exit(EXIT_FAILURE);
+    }
+    else if (pid > 0)
+    {
+        if (is_background == 0)
+        {
+            waitpid(pid, NULL, 0);
+        }
+    }
 }
 
 void my_cd(char ** args)

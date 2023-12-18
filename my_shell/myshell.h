@@ -5,6 +5,11 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <termios.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 #define TRUE 1
 #define MAX_COMMAND_LENGTH 100
@@ -29,6 +34,12 @@ void get_command(char * command);
 
 void deal_command(char * command);
 
-void my_pipe(char **args, int num);
+void execute(char **args, int cnt);
+
+void deal_pipe(int left, int right, char **args);
+
+void deal_others(int left, int right, char **args);
+
+int find(char *command);
 
 void my_cd(char ** args);
