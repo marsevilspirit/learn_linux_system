@@ -10,12 +10,14 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 #define TRUE 1
 #define MAX_COMMAND_LENGTH 100
 #define NAME_LENGTH 256
 #define MYSH_TOKEN " \t\r\n"
-#define LINES "-----------------------------------------------------------------------------------------------------------------------------------------"
+#define LINES "========================================================================================================================================="
 
 #define RESET       "\x1B[0m"
 #define RED         "\x1B[31m"
@@ -34,10 +36,10 @@ void get_command(char * command);
 
 void deal_command(char * command);
 
-void execute(char **args, int cnt);
+void execute(char ** args, int cnt);
 
-void deal_pipe(int left, int right, char **args);
+void deal_pipe(int left, int right, char ** args);
 
-void deal_others(int left, int right, char **args);
+void deal_others(int left, int right, char ** args);
 
 void my_cd(char ** args);

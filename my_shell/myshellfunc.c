@@ -82,11 +82,22 @@ void deal_command(char * command)
 
 void execute(char **args, int cnt)
 {
+    int flag_background = 0;
     pid_t pid;
     pid = fork();
     if (pid == -1)
     {
         printf("无法创建子进程");
+    }
+
+    for(int i = 0; i < cnt; i++)
+    {
+        if (strcmp(args[i], "&") == 0)
+        {
+            flag_background = 1;
+            args[i] = NULL;
+            break;
+        }
     }
 
     if (pid == 0)
@@ -95,7 +106,8 @@ void execute(char **args, int cnt)
     }
     else if (pid > 0)
     {
-        waitpid(pid, NULL, 0);
+        if(flag_background == 0)
+            waitpid(pid, NULL, 0);
     }
 }
 
@@ -105,6 +117,10 @@ void deal_pipe(int left, int right, char **args)
 
     for (int i = left; i < right; i++)
     {
+        if(args[i] == NULL)
+        {
+            continue;
+        }
         if (strcmp(args[i], "|") == 0) 
         {
             flag_pipe = i;
@@ -141,35 +157,23 @@ void deal_pipe(int left, int right, char **args)
         close(fd[0]);
         dup2(fd[1], STDOUT_FILENO);
         deal_others(left, flag_pipe, args);
-        exit(0);
     }
     else if (pid > 0)
     {
-        waitpid(pid, NULL, 0);
-
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         deal_pipe(flag_pipe + 1, right, args);
     }
 }
 
-void deal_others(int left, int right, char **args)
+void deal_others(int left, int right, char ** args)
 {
     int fd;
-    int flag_background = 0;
 
     for (int i = left; i < right; i++)
     {
-        if (strcmp(args[i], "&") == 0)
-        {
-            flag_background = 1;
-            args[i] = NULL;
-            break;
-        }
-    }
-
-    for (int i = left; i < right; i++)
-    {
+        if(args[i] == NULL)
+            continue;
 
         if (strcmp(args[i], ">") == 0)
         {
@@ -197,33 +201,17 @@ void deal_others(int left, int right, char **args)
         }
     }
 
-    pid_t pid = fork();
-    if (pid == -1)
-    {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    }
 
-    if (pid == 0)
+    char *command[MAX_COMMAND_LENGTH];
+    for (int i = left; i < right; i++)
     {
-        char *command[MAX_COMMAND_LENGTH];
-        for (int i = left; i < right; i++)
-        {
-            command[i] = args[i];
-        }
-        command[right] = NULL; 
-        execvp(command[left], command + left);
+        command[i] = args[i];
+    }
+    command[right] = NULL; 
+    execvp(command[left], command + left);
 
-        printf("无效命令\n");
-        exit(EXIT_FAILURE);
-    }
-    else if (pid > 0)
-    {
-        if (flag_background == 0)
-        {
-            waitpid(pid, NULL, 0);
-        }
-    }
+    printf("无效命令\n");
+    exit(EXIT_FAILURE);
 }
 
 void my_cd(char ** args)
@@ -294,3 +282,4 @@ void my_cd(char ** args)
 
     setenv("OLDPWD", current_dir, 1); 
 }
+
