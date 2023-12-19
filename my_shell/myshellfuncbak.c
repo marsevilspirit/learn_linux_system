@@ -145,8 +145,6 @@ void deal_pipe(int left, int right, char **args)
     }
     else if (pid > 0)
     {
-        waitpid(pid, NULL, 0);
-
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         deal_pipe(flag_pipe + 1, right, args);
@@ -197,33 +195,18 @@ void deal_others(int left, int right, char **args)
         }
     }
 
-    pid_t pid = fork();
-    if (pid == -1)
-    {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    }
 
-    if (pid == 0)
+    char *command[MAX_COMMAND_LENGTH];
+    for (int i = left; i < right; i++)
     {
-        char *command[MAX_COMMAND_LENGTH];
-        for (int i = left; i < right; i++)
-        {
-            command[i] = args[i];
-        }
-        command[right] = NULL; 
-        execvp(command[left], command + left);
+        command[i] = args[i];
+    }
+    command[right] = NULL; 
+    execvp(command[left], command + left);
 
-        printf("无效命令\n");
-        exit(EXIT_FAILURE);
-    }
-    else if (pid > 0)
-    {
-        if (flag_background == 0)
-        {
-            waitpid(pid, NULL, 0);
-        }
-    }
+    printf("无效命令\n");
+    exit(EXIT_FAILURE);
+
 }
 
 void my_cd(char ** args)
@@ -294,3 +277,4 @@ void my_cd(char ** args)
 
     setenv("OLDPWD", current_dir, 1); 
 }
+
