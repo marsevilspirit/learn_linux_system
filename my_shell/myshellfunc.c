@@ -1,4 +1,5 @@
 #include "myshell.h"
+#include <unistd.h>
 
 void disable_EOF() 
 {
@@ -23,6 +24,9 @@ void print_name()
 {
     char hostname[NAME_LENGTH];
     char cwd[NAME_LENGTH];
+    char * name;
+
+    name = getlogin();
     getcwd(cwd, sizeof(cwd));
 
     char *last_dir = strrchr(cwd, '/');
@@ -33,7 +37,7 @@ void print_name()
 
     gethostname(hostname, sizeof(hostname));
 
-    printf(BOLD YELLOW"%s"WHITE"@"RED"%s"" "BLUE"%s/", getlogin(), hostname, (strcmp(getlogin(), last_dir)?last_dir:"~"));
+    printf(BOLD YELLOW"%s"WHITE"@"RED"%s"" "BLUE"%s/", name, hostname, (strcmp(name, last_dir)?last_dir:"~"));
 
     printf(RESET" $ ");
 
@@ -200,7 +204,6 @@ void deal_others(int left, int right, char ** args)
             i++;
         }
     }
-
 
     char *command[MAX_COMMAND_LENGTH];
     for (int i = left; i < right; i++)
