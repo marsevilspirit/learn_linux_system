@@ -1,0 +1,79 @@
+aw
+wef
+erf
+aw
+asdf
+asdf
+f
+asd
+asdg
+aerg
+h
+he
+ujrt
+5
+hj
+dfg
+fg
+asf
+df
+fsa
+asdf
+fsda
+fsda
+sfad
+fsda
+fsda
+ljkasdfljksfdjlkfsd
+}
+    return 0;
+
+    free(command);
+
+    }
+        deal_command(command);
+        }
+            break;
+        {
+        if(strcmp(command, "exit") == 0)
+        get_command(command); 
+        print_name();
+    {
+    while (TRUE) 
+
+    disable_EOF();
+    signal(SIGINT, SIG_IGN);
+
+    char *command = (char *)malloc(MAX_COMMAND_LENGTH*sizeof(char));
+
+    print_myshell();
+{
+int main(void)
+
+#include "myshell.h"
+#include "myshell.h"
+
+int main(void)
+{
+    print_myshell();
+
+    char *command = (char *)malloc(MAX_COMMAND_LENGTH*sizeof(char));
+
+    signal(SIGINT, SIG_IGN);
+    disable_EOF();
+
+    while (TRUE) 
+    {
+        print_name();
+        get_command(command); 
+        if(strcmp(command, "exit") == 0)
+        {
+            break;
+        }
+        deal_command(command);
+    }
+
+    free(command);
+
+    return 0;
+}
