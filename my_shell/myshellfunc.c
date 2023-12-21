@@ -1,5 +1,4 @@
 #include "myshell.h"
-#include <unistd.h>
 
 void disable_EOF() 
 {
