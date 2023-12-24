@@ -208,7 +208,7 @@ void list_l(char *list_name, const char *dir_path)//-l
 
     struct passwd * owner_info = getpwuid(list_l.st_uid);
     printf(" %s", owner_info->pw_name);
-    //struct group * group_info = getgrgid(list_l.st_gid);//这是一个废物和函数，不要去用它
+    //struct group * group_info = getgrgid(list_l.st_gid);//这是一个废物函数，不要去用它
     //printf(" %s", group_info->gr_name);
     printf(" %s", owner_info->pw_name);
     printf(" %8ld", list_l.st_size);
@@ -258,13 +258,9 @@ void print_color(char * list_name, const char *dir_path)
     {
         case S_IFREG: 
             if (pr_color.st_mode & S_IXUSR) 
-            {
                 printf(GREEN "%s" RESET "\n", list_name);  // 可执行文件
-            } 
             else  
-            {
                 printf(YELLOW"%s"RESET"\n", list_name);  // 普通文件
-            }              
             break;
         case S_IFDIR: 
             printf(BLUE"%s"RESET"\n",list_name);    
