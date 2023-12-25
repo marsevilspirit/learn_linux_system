@@ -36,9 +36,7 @@ void print_name()
 
     gethostname(hostname, sizeof(hostname));
 
-    printf(BOLD YELLOW"%s"WHITE"@"RED"%s"" "BLUE"%s/", name, hostname, (strcmp(name, last_dir)?last_dir:"~"));
-
-    printf(RESET" $ ");
+    printf(BOLD YELLOW"%s"WHITE"@"RED"%s"" "BLUE"%s/"RESET" $ ", name, hostname, (strcmp(name, last_dir)?last_dir:"~"));
 
     fflush(stdout);
 }
