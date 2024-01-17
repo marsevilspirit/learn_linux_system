@@ -1,26 +1,52 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
-#define MAX_THREAD_NUM 5
+#define QUEUE_CAPACITY 30
 
 typedef struct tpool_work{
-    void* (*work_routine)(void*);
+    void* (*task_function)(void*);
     void* args;
-    struct tpool_work* next;// list
 }tpool_work_t;
 
-typedef struct tpool{
-    size_t max_thread_num;
-    size_t shutdown;
-    pthread_t *id;//id array
-    tpool_work_t tpool_head;// head node
-    pthread_mutex_t queue_lock;
-    pthread_cond_t queue_ready;// cond
+typedef struct pthread_queue{
+    tpool_work_t* task;
+    int capacity;
+    int size;
+    int front;
+    int rear;
+    pthread_mutex_t mutex;
+    pthread_cond_t empty;
+    pthread_cond_t full;
+}tqueue_t;
+
+typedef struct {
+    pthread_t* threads;
+    int num_threads;
+    tqueue_t* task_queue;
+    int stop;
 }tpool_t;
 
-int create_tpool(tpool_t* pool, size_t max_thread_num);
+typedef struct {
+    tqueue_t* task_queue;
+    int thread_id;
+} targs_t;
 
-int add_task_tpool(tpool_t* pool, void* (*routine)(void*), void* args);
+void init_tqueue(tqueue_t* queue, int capacity);
+
+void destroy_tqueue(tqueue_t* queue);
+
+void add_task_tqueue(tqueue_t* queue, tpool_work_t task);
+
+tpool_work_t pop_task_tqueue(tqueue_t* queue);
+
+void init_tpool(tpool_t* pool, int num_threads);
+
+void add_task_tpool(tpool_t* pool, void* (*task_function)(void*), void* arg);
 
 void destroy_tpool(tpool_t* pool);
+
+void waitCompletion(tpool_t* pool);
+
+void stopThreadPool(tpool_t* pool);
