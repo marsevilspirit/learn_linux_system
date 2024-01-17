@@ -16,9 +16,14 @@ void SPSCQueuePush(SPSCQueue *queue, void *s);
 void *SPSCQueuePop(SPSCQueue *queue);
 void SPSCQueueDestory(SPSCQueue *);
 
-//Multi-producer , Multi-consumer Queue
+// 定义多生产者多消费者队列结构
 struct MPMCQueue {
     /* Define Your Data Here */
+    void **buffer;
+    int capacity;
+    int size;
+    int head;
+    int tail;
 } typedef MPMCQueue;
 
 MPMCQueue *MPMCQueueInit(int capacity);

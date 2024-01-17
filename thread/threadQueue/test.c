@@ -2,7 +2,7 @@
 #include <pthread.h>
 
 #define QUEUE_CAPACITY 10
-#define NUM_ITEMS 200000000
+#define NUM_ITEMS 200000
 
 pthread_mutex_t mutex;
 pthread_cond_t cond;
