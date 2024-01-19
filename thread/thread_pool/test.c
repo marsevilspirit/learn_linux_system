@@ -30,7 +30,6 @@ int main(void)
 
     waitCompletion(&pool);
 
-    stopThreadPool(&pool);
     destroy_tpool(&pool);
 
     return 0;

@@ -49,4 +49,3 @@ void destroy_tpool(tpool_t* pool);
 
 void waitCompletion(tpool_t* pool);
 
-void stopThreadPool(tpool_t* pool);

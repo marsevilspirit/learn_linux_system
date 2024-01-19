@@ -117,15 +117,8 @@ void waitCompletion(tpool_t* pool)
     {
         pthread_join(pool->threads[i], NULL);
     }
-}
 
-void stopThreadPool(tpool_t* pool)
-{
     pool->stop = 1;
-
-    for (int i = 0; i < pool->num_threads; ++i)
-    {
-        add_task_tpool(pool, NULL, NULL);
-    }
 }
+
 
