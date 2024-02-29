@@ -56,6 +56,11 @@ tpool_work_t pop_task_tqueue(tqueue_t* queue)
 
 void* worker(void* arg)
 {
+    if (arg == NULL) {
+        fprintf(stderr, "Thread argument is NULL.\n");
+        pthread_exit(NULL);
+    }
+
     targs_t* args = (targs_t*)arg;
     tqueue_t* task_queue = args->task_queue;
 
@@ -63,7 +68,7 @@ void* worker(void* arg)
     {
         tpool_work_t task = pop_task_tqueue(task_queue);
 
-        if(task.task_function ==NULL)
+        if(task.task_function == NULL)
         {
             break;
         }
@@ -72,7 +77,7 @@ void* worker(void* arg)
     }
 
     free(arg);
-    return NULL;
+    pthread_exit(NULL);
 }
 
 void init_tpool(tpool_t* pool, int num_threads)
@@ -86,7 +91,13 @@ void init_tpool(tpool_t* pool, int num_threads)
 
     for(int i = 0; i < num_threads; i++)
     {
-       targs_t* args = (targs_t*)malloc(sizeof(targs_t));
+       targs_t* args = (targs_t*)malloc(sizeof(targs_t)); // 分配内存给参数结构体指针
+       if (args == NULL) {
+           // 处理内存分配失败的情况
+           // 在这里可以采取一些恰当的处理方式，比如打印错误信息并退出
+           fprintf(stderr, "Failed to allocate memory for thread arguments.\n");
+           exit(EXIT_FAILURE);
+       }
        args->task_queue = pool->task_queue;
        args->thread_id = i;
        pthread_create(&pool->threads[i], NULL, worker, args);

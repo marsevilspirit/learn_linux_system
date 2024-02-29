@@ -1,5 +1,5 @@
 #include "thread_pool.h"
-#define NUM_THREADS 10
+#define NUM_THREADS 5
 
 
 void* calculateFactorial(void* arg) 
