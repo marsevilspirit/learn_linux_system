@@ -200,6 +200,7 @@ void deal_others(int left, int right, char ** args)
             args[i] = NULL;
             i++;
         }
+
     }
 
     char *command[MAX_COMMAND_LENGTH];

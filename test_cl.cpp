@@ -7,7 +7,7 @@
 #include <arpa/inet.h>
 
 #define PORT_NUM 50000
-#define IP "10.30.0.245"
+#define IP "10.30.0.250"
 #define BUF_SIZE 2048
 
 void errExit(const char* error)
@@ -35,6 +35,7 @@ int main(void)
         errExit("connect");
 
     printf("\nPlease input: ");
+    memset(buf, 0, BUF_SIZE);
     scanf("%s", buf);
     send(sfd, buf, strlen(buf), 0);
     memset(buf, 0, BUF_SIZE);

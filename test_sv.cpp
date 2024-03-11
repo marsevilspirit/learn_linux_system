@@ -51,6 +51,8 @@ int main(void)
         send(cld, buf, strlen(buf), 0);
 
         close(cld);
+
+        memset(buf, 0, BUF_SIZE);
     }
 
     return 0;
